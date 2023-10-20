@@ -5,7 +5,8 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-int main() {
+int main()
+{
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == -1) {
         std::cerr << "Error creating socket: " << strerror(errno) << std::endl;
@@ -52,14 +53,32 @@ int main() {
         } 
         else 
         {
+            //------server handles http client message------
             // Null-terminate the received data to treat it as a C string
             buffer[bytesRead] = '\0';
-            std::cout << "Received from client: " << buffer << std::endl;
+
+            // Parse the HTTP request
+            char* token = strtok(buffer, "\r\n"); // Split lines by carriage return and newline
+
+            // Print the request line
+            std::cout << "Request Line: " << token << std::endl;
+
+            // Parse and print the headers
+            while ((token = strtok(NULL, "\r\n"))) {
+                std::cout << "Header: " << token << std::endl;
+            }
         }
 
         // Send a "Hello, Client!" message to the connected client
-        const char* message = "Hello, Client! :D";
-        if (send(clientSocket, message, strlen(message), 0) == -1)
+        // const char* message = "Hello, Client! :D";
+
+        // Basic HTTP response
+        const char* httpResponse = "HTTP/1.1 200 OK\r\n"
+                                    "Content-Type: text/plain\r\n"
+                                    "\r\n"
+                                    "Hello, Client! :D";
+                                        
+        if (send(clientSocket, httpResponse, strlen(httpResponse), 0) == -1)
         {
             std::cerr << "Error sending data to client: " << strerror(errno) << std::endl;
         }
