@@ -1,14 +1,45 @@
-CC = g++
-CFLAGS = -Wall -std=c++98
-LDFLAGS =
+NAME		=	webserv
 
-all: server client
+INCLUDES	=	-I include
 
-server: server.cpp
-	$(CC) $(CFLAGS) -o server server.cpp $(LDFLAGS)
+CC			=	clang++
 
-client: client.cpp
-	$(CC) $(CFLAGS) -o client client.cpp $(LDFLAGS)
+RM			=	rm -rf
+
+CFLAGS		= -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+
+
+DIR_SRCS	=	src
+DIR_BUILD	=	build
+
+SRCS		=	$(DIR_SRCS)/main.cpp \
+
+
+
+BUILD		=	$(subst $(DIR_SRCS), $(DIR_BUILD), $(SRCS:.cpp=.o))
+
+
+$(NAME): $(BUILD)
+		@-$(CC) $(CFLAGS) $(BUILD) -o $(NAME)
+		@echo "Executable $(NAME) created!"
+
+$(DIR_BUILD)/%.o	:	$(DIR_SRCS)/%.cpp
+			@mkdir -p $(DIR_BUILD)
+			@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+			@echo "Compilation OK!"
+
+all: $(NAME)
 
 clean:
-	rm -f server client
+		@$(RM) $(BUILD)
+		@$(RM) -r $(DIR_BUILD)
+		@echo "Cleaned!!"
+
+fclean:	clean
+		@$(RM) $(NAME)
+		@$(RM) $(BUILD)
+		@$(RM) -r $(DIR_BUILD)
+
+re:		fclean all
+
+PHONY:	all clean fclean re
