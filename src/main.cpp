@@ -1,4 +1,7 @@
 #include "Libs.hpp"
+#include "Config.hpp" 
+
+Config config;
 
 void stopExecution(int signal)
 {
@@ -30,6 +33,7 @@ int main(int argc, char **argv)
     }
 
     setupSignalHandler();
+    config.handleConfigFile(argv[1]);
 
     (void)**argv;
 
@@ -39,7 +43,6 @@ int main(int argc, char **argv)
 
     //return(webserver.run(argv[1]));
 }
-
 
 
 

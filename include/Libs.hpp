@@ -5,7 +5,13 @@
 
 #include <iostream> //Standart input output operation
 #include <csignal>  //Signal handling
-
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+#include <vector>
+#include <stack>
 
 // C libraries
 
