@@ -23,13 +23,16 @@ class Config
         bool checkBracketsMatch(void);
         bool validateServerBlockStart(void);
         void parseConfigFile(void);     
-        void getServerData(std::string serverBlock);
+        void getServerData(const std::string& serverBlock);
+        void parseServerDirectives(std::istream& ss);
+        bool getLocationBlocks(std::istream& blockStream, std::string& locationBlock);
+
 
     private:
         std::string _filePath;
         std::string _configFile;
         std::map<std::string, std::string> _settings;
-
+        std::map<std::string, std::vector<std::string> > serverData;
 };
 
 #endif
