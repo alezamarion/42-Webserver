@@ -1,4 +1,4 @@
-NAME		=	webserv
+NAME		=	webserver
 
 INCLUDES	=	-I include
 
@@ -6,13 +6,13 @@ CC			=	clang++
 
 RM			=	rm -rf
 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+CFLAGS		= 	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 
 DIR_SRCS	=	src
 DIR_BUILD	=	build
 
-SRCS		=	$(DIR_SRCS)/main.cpp \
+SRCS		=	$(DIR_SRCS)/main.cpp $(DIR_SRCS)/Config.cpp
 
 
 

@@ -8,7 +8,7 @@ class Config
     public:
         // Constructors
         Config(void);
-        explicit Config(std::string const &configFilePath);
+        explicit Config(std::string const &FilePath);
 
         // Copy constructor
         Config(Config const &src);
@@ -19,10 +19,11 @@ class Config
         // Copy assignment operator
         Config &operator=(Config const &rhs);
 
-        std::map<std::string, std::vector<std::string>> handleConfigFile(char *filePath);
-        bool Config::checkBracketsMatch(const std::string& file_content);
-        bool Config::validateServerBlockStart(const std::string& inputFile);
-        
+        std::map<std::string, std::vector<std::string> > handleConfigFile(char *filePath);
+        bool checkBracketsMatch(void);
+        bool validateServerBlockStart(void);
+        void parseConfigFile(void);     
+        void getServerData(std::string serverBlock);
 
     private:
         std::string _filePath;
