@@ -24,9 +24,9 @@ class Config
         bool validateServerBlockStart(void);
         void parseConfigFile(void);     
         void getServerData(const std::string& serverBlock);
-        void parseServerDirectives(std::istream& ss);
-        bool getLocationBlocks(std::istream& blockStream, std::string& locationBlock);
-
+        // void parseServerDirectives(std::istream& ss);
+        // bool getLocationBlocks(std::istream& blockStream, std::string& locationBlock);
+        // void parseLocationBlocks(const std::string& locationBlock);
 
     private:
         std::string _filePath;

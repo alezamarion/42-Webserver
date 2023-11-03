@@ -149,7 +149,7 @@ void Config::parseConfigFile(void)
                 // Print the server block to verify it
                 std::cout << "\nServer Block Found:\n" << serverBlock << "\n\n";
                 
-                getServerData(configFileCopy.substr(blockStart, i - blockStart + 1)); //extract server block
+                //getServerData(configFileCopy.substr(blockStart, i - blockStart + 1)); //extract server block
                 insideServerBlock = false;
                 blockStart = i;
             }
@@ -157,6 +157,7 @@ void Config::parseConfigFile(void)
     }    
 }
 
+/*
 void Config::getServerData(const std::string& serverBlock)
 {
     std::istringstream blockStream(serverBlock);
@@ -169,7 +170,7 @@ void Config::getServerData(const std::string& serverBlock)
         parseLocationBlocks(locationStream); // Parse the individual location block
     }
 }
-
+*/
 
 
 
