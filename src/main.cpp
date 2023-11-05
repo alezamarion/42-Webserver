@@ -3,7 +3,7 @@
 
 Config config;
 
-void stopExecution(int signal)
+void stopAndClean(int signal)
 {
     std::cout << '\n';
     std::cout << "CTRL + C received: freeing up resources" << std::endl;
@@ -15,7 +15,7 @@ void stopExecution(int signal)
 void setupSignalHandler()
 {
     struct sigaction signalHandler;
-    signalHandler.sa_handler = stopExecution;
+    signalHandler.sa_handler = stopAndClean;
     sigemptyset(&signalHandler.sa_mask);       // Clear the signalHandler.sa_mask, meaning no additional signals are blocked during the execution of the signal handler.
     signalHandler.sa_flags = 0;                // Set sa_flags to 0, indicating no special flags for the signal handler.
     sigaction(SIGINT, &signalHandler, 0);
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
     while (true){}
 
-    //return(webserver.run(argv[1]));
+    /* return(webserver.run(argv[1])); */
 }
 
 
