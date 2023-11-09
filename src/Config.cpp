@@ -50,8 +50,9 @@ std::map<std::string, std::vector<std::string> > Config::handleConfigFile(char *
 
     std::cout << "Everything seens OK" << std::endl;
 
-    //parse server blocks
-    parseConfigFile();
+    extractServerBlock();
+    //parseServerBlock();
+
 
     //return result in a data structure
     std::map<std::string, std::vector<std::string> > result; //empty map, just to return;
@@ -119,7 +120,7 @@ bool Config::checkBracketsMatch()
     return true;
 }
 
-void Config::parseConfigFile(void)
+void Config::extractServerBlock(void)
 {
     int braces = 0;
     size_t blockStart = 0;
@@ -144,12 +145,14 @@ void Config::parseConfigFile(void)
             if (braces == 0)
             {
                 // Extract the server block substring
-                std::string serverBlock = configFileCopy.substr(blockStart, i - blockStart + 1);
+                this->_serverBlock.push_back(configFileCopy.substr(blockStart, i - blockStart + 1));
 
                 // Print the server block to verify it
-                std::cout << "\nServer Block Found:\n" << serverBlock << "\n\n";
-                
-                //getServerData(configFileCopy.substr(blockStart, i - blockStart + 1)); //extract server block
+                std::cout << "Server Block Found" << std::endl;
+                for (size_t i = 0; i < _serverBlock.size(); ++i)
+                {
+                    std::cout << _serverBlock[i] << "\n" << std::endl;
+                }
                 insideServerBlock = false;
                 blockStart = i;
             }
@@ -158,18 +161,40 @@ void Config::parseConfigFile(void)
 }
 
 /*
-void Config::getServerData(const std::string& serverBlock)
+
+void Config::parseServerBlock()
 {
-    std::istringstream blockStream(serverBlock);
-    parseServerDirectives(blockStream); // Parse directives outside of any location block
-    
-    std::string locationBlock;
-    while (getLocationBlocks(blockStream, locationBlock)) // Get each location block
-    {   
-        std::istringstream locationStream(locationBlock);
-        parseLocationBlocks(locationStream); // Parse the individual location block
+    this->_servers.clear(); // Clear any existing servers
+
+    for (size_t i = 0; i < this->_serverBlocks.size(); ++i)
+    {
+        Server server; // Create a new Server object for each server block
+
+        // Assuming parseDirectives is a function that takes a string and a reference to a Server object and parses the directives.
+        parseDirectives(this->_serverBlocks[i], server);
+
+        // Now find and parse all location blocks within this server block.
+        std::vector<std::string> locationBlocks = extractLocationBlocks(this->_serverBlocks[i]);
+        
+        for (size_t j = 0; j < locationBlocks.size(); ++j)
+        {
+            // Assuming parseLocationBlock is a function that takes a string and returns a Location object.
+            Location location = parseLocationBlock(locationBlocks[j]);
+
+            // Extract the path from the location block for the key to add the Location to the Server
+            std::istringstream iss(locationBlocks[j]);
+            std::string locationPath;
+            iss >> locationPath; // Extract the path
+
+            server.addLocation(locationPath, location); // Add the Location object to the Server
+        }
+
+        this->_servers.push_back(server); // Add the fully configured Server object to the vector
     }
+
+    // Now this->_servers contains all the Server objects representing the parsed server blocks
 }
+
 */
 
 

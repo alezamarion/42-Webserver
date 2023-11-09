@@ -2,6 +2,7 @@
 #define CONFIG_HPP
 
 #include "Libs.hpp"
+#include "Server.hpp"
 
 class Config
 {
@@ -22,17 +23,14 @@ class Config
         std::map<std::string, std::vector<std::string> > handleConfigFile(char *filePath);
         bool checkBracketsMatch(void);
         bool validateServerBlockStart(void);
-        void parseConfigFile(void);     
-        void getServerData(const std::string& serverBlock);
-        // void parseServerDirectives(std::istream& ss);
-        // bool getLocationBlocks(std::istream& blockStream, std::string& locationBlock);
-        // void parseLocationBlocks(const std::string& locationBlock);
+        void extractServerBlock(void);     
+        void parseServerBlock(const std::string& serverBlock);
 
     private:
         std::string _filePath;
         std::string _configFile;
-        std::map<std::string, std::string> _settings;
-        std::map<std::string, std::vector<std::string> > serverData;
+        std::vector<std::string> _serverBlock;
+        std::vector<Server> _servers;
 };
 
 #endif
