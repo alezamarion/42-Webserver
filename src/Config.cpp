@@ -164,14 +164,12 @@ void Config::extractServerBlock(void)
 
 void Config::parseServerBlock()
 {
-    this->_servers.clear(); // Clear any existing servers
-
     for (size_t i = 0; i < this->_serverBlocks.size(); ++i)
     {
         Server server; // Create a new Server object for each server block
 
         // Assuming parseDirectives is a function that takes a string and a reference to a Server object and parses the directives.
-        parseDirectives(this->_serverBlocks[i], server);
+        parseDirectives(this->_serverBlock[i], server);
 
         // Now find and parse all location blocks within this server block.
         std::vector<std::string> locationBlocks = extractLocationBlocks(this->_serverBlocks[i]);
