@@ -16,9 +16,9 @@ Location::~Location(void)
     return;
 }
 
-Location &Location::operator=(Location const &rhs)
+Location &Location::operator=(const Location &rhs)
 {
-    *this = rhs; 
+    if (this != &rhs) // Check for self-assignment to avoid stack overflow
+        *this = rhs; 
     return *this;
 }
-

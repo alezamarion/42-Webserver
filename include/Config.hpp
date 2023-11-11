@@ -20,16 +20,21 @@ class Config
         // Copy assignment operator
         Config &operator=(Config const &rhs);
 
-        std::map<std::string, std::vector<std::string> > handleConfigFile(char *filePath);
+        void handleConfigFile(char *filePath);
         bool checkBracketsMatch(void);
         bool validateServerBlockStart(void);
-        void extractServerBlock(void);     
-        void parseServerBlock(const std::string& serverBlock);
+        void extractServerBlocks(void);     
+        void parseServerBlocks(void);
+        void parseDirectives(const std::string &serverBlock, Server &server);
+        void trim(std::string &s);
+
+        //debug:
+        void printAllServerDirectives() const;
 
     private:
         std::string _filePath;
         std::string _configFile;
-        std::vector<std::string> _serverBlock;
+        std::vector<std::string> _serverBlocks;
         std::vector<Server> _servers;
 };
 

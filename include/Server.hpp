@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include "Libs.hpp"
+#include "Location.hpp"
 
 class Server
 {
@@ -19,11 +20,17 @@ class Server
         Server &operator=(Server const &rhs);
 
         //methods:
+        void setDirectives(const std::string &name, const std::string &value);
+
+        //debug:
+        void printAllServerDirectives() const;
+        void printDirectives(void) const;
+
 
 
     private:
-            //data:
-
+        std::map<std::string, std::string> _directives; //std::map stores its elements in a sorted order based on the key.
+        std::map<std::string, Location> _locations; 
 
 };
 

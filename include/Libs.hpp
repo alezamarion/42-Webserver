@@ -12,6 +12,8 @@
 #include <map>
 #include <vector>
 #include <stack>
+#include <algorithm>
+#include <cctype>
 
 // C libraries
 

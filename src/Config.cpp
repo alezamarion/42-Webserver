@@ -20,13 +20,14 @@ Config::~Config(void)
     return;
 }
 
-Config &Config::operator=(Config const &rhs)
+Config &Config::operator=(const Config &rhs)
 {
-    *this = rhs; 
+    if (this != &rhs) // Check for self-assignment to avoid stack overflow
+        *this = rhs; 
     return *this;
 }
 
-std::map<std::string, std::vector<std::string> > Config::handleConfigFile(char *filePath)
+void Config::handleConfigFile(char *filePath)
 {
     std::ifstream configFile;
     std::stringstream content;
@@ -50,14 +51,13 @@ std::map<std::string, std::vector<std::string> > Config::handleConfigFile(char *
 
     std::cout << "Everything seens OK" << std::endl;
 
-    extractServerBlock();
-    //parseServerBlock();
-
+    extractServerBlocks();
+    parseServerBlocks();
+    //processServerAndLocation();
 
     //return result in a data structure
     std::map<std::string, std::vector<std::string> > result; //empty map, just to return;
         
-    return result;
 }
 
 /*  The purpose of the function checkServerBlock is to verify if the first block of the configuration file 
@@ -120,7 +120,7 @@ bool Config::checkBracketsMatch()
     return true;
 }
 
-void Config::extractServerBlock(void)
+void Config::extractServerBlocks(void)
 {
     int braces = 0;
     size_t blockStart = 0;
@@ -145,56 +145,123 @@ void Config::extractServerBlock(void)
             if (braces == 0)
             {
                 // Extract the server block substring
-                this->_serverBlock.push_back(configFileCopy.substr(blockStart, i - blockStart + 1));
+                this->_serverBlocks.push_back(configFileCopy.substr(blockStart, i - blockStart + 1));
 
-                // Print the server block to verify it
-                std::cout << "Server Block Found" << std::endl;
-                for (size_t i = 0; i < _serverBlock.size(); ++i)
-                {
-                    std::cout << _serverBlock[i] << "\n" << std::endl;
-                }
                 insideServerBlock = false;
                 blockStart = i;
             }
         }
-    }    
+    } 
+    // DEGUB: Print the server block to verify it
+    std::cout << "\nServer Block Found\n" << std::endl;
+    for (size_t i = 0; i < _serverBlocks.size(); ++i)
+    {
+        std::cout << _serverBlocks[i] << "\n" << std::endl;
+    }
 }
 
-/*
-
-void Config::parseServerBlock()
+void Config::parseServerBlocks()
 {
     for (size_t i = 0; i < this->_serverBlocks.size(); ++i)
     {
         Server server; // Create a new Server object for each server block
+        std::string serverBlock = this->_serverBlocks[i];
 
         // Assuming parseDirectives is a function that takes a string and a reference to a Server object and parses the directives.
-        parseDirectives(this->_serverBlock[i], server);
+        parseDirectives(serverBlock, server);
 
-        // Now find and parse all location blocks within this server block.
-        std::vector<std::string> locationBlocks = extractLocationBlocks(this->_serverBlocks[i]);
+        //DEBUG: print directives
+        _servers.push_back(server);
+        std::cout << "Directives for server " << (i + 1) << ":" << std::endl;
+        server.printDirectives();
+        std::cout << std::endl;
+                
+
+        // // Now find and parse all location blocks within this server block.
+        // std::vector<std::string> locationBlocks = extractLocationBlocks(serverBlock, server);
         
-        for (size_t j = 0; j < locationBlocks.size(); ++j)
-        {
-            // Assuming parseLocationBlock is a function that takes a string and returns a Location object.
-            Location location = parseLocationBlock(locationBlocks[j]);
+        // for (size_t j = 0; j < locationBlocks.size(); ++j)
+        // {
+        //     // Assuming parseLocationBlock is a function that takes a string and returns a Location object.
+        //     Location location = parseLocationBlock(locationBlocks[j]);
 
-            // Extract the path from the location block for the key to add the Location to the Server
-            std::istringstream iss(locationBlocks[j]);
-            std::string locationPath;
-            iss >> locationPath; // Extract the path
+        //     // Extract the path from the location block for the key to add the Location to the Server
+        //     std::istringstream iss(locationBlocks[j]);
+        //     std::string locationPath;
+        //     iss >> locationPath; // Extract the path
 
-            server.addLocation(locationPath, location); // Add the Location object to the Server
-        }
+        //     server.addLocation(locationPath, location); // Add the Location object to the Server
+        // }
 
-        this->_servers.push_back(server); // Add the fully configured Server object to the vector
+        //this->_servers.push_back(server); // Add the fully configured Server object to the vector
     }
 
     // Now this->_servers contains all the Server objects representing the parsed server blocks
 }
 
-*/
+void Config::parseDirectives(const std::string &serverBlock, Server &server)
+{
+    std::istringstream stream(serverBlock);
+    std::string line;
+
+    // Skip the opening brace
+    std::getline(stream, line);
+
+    while (std::getline(stream, line))
+    {
+        trim(line); // Assuming 'trim' is a function to remove whitespace
+
+        // Skip empty lines
+        if (line.empty())
+            continue;      
+
+        // Check if the line starts with "location", indicating the start of a location block
+        if (line.find("location") == 0)
+        {
+            break; // Exit the loop, as the remaining lines are location directives
+        }
+
+        // Parse the directive
+        std::istringstream lineStream(line);
+        std::string directive, value;
+        lineStream >> directive;
+
+        // The rest of the line is the value; you can tailor this part based on how you expect values to be formatted
+        std::getline(lineStream, value);
+        trim(value); // Trim the value too
+
+        // Store the directive in the server object
+        server.setDirectives(directive, value);
+    }
+}    
+
+void Config::trim(std::string &s) 
+{
+    // Find the first character that is not a whitespace
+    std::string::iterator firstNonWhitespace = std::find_if(s.begin(), s.end(), not1(std::ptr_fun<int, int>(std::isspace)));
+
+    // Erase leading whitespace
+    s.erase(s.begin(), firstNonWhitespace);
+
+    // Find the last character that is not a whitespace (using reverse iterator)
+    std::string::reverse_iterator lastNonWhitespace = std::find_if(s.rbegin(), s.rend(), not1(std::ptr_fun<int, int>(std::isspace)));
+
+    // Erase trailing whitespace
+    // Convert reverse iterator to normal iterator before erasing
+    s.erase(lastNonWhitespace.base(), s.end());
+}
 
 
+/* DEBUG */
+
+void Config::printAllServerDirectives() const
+{
+    for (size_t i = 0; i < _servers.size(); ++i)
+    {
+        std::cout << "Server " << (i + 1) << ":" << std::endl;
+        _servers[i].printDirectives();
+        std::cout << std::endl;
+    }
+}
 
 
