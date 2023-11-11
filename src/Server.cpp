@@ -18,24 +18,18 @@ Server::~Server(void)
 
 Server& Server::operator=(const Server& rhs)
 {
-    if (this != &rhs) // Check for self-assignment
+    if (this != &rhs) // Check for self-assignment avoiding stack overflow
     { 
-        // Copy each member from 'rhs' to 'this' and copy other members as needed
         _directives = rhs._directives;
         _locations = rhs._locations;       
     }
     return *this;
 }
 
-
 void Server::setDirectives(const std::string &name, const std::string &value)
 {
     _directives[name] = value;
 }
-
-
-
-
 
 
 /* DEBUG */

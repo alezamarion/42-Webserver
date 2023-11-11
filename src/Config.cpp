@@ -27,12 +27,15 @@ Config &Config::operator=(const Config &rhs)
     return *this;
 }
 
+
+/* Extract information from the configuration file and then create a server object for each server that exists in the configuration file. The following functions are part of this */
+
 void Config::handleConfigFile(char *filePath)
 {
     std::ifstream configFile;
     std::stringstream content;
 
-    //open file
+    // open file
     configFile.open(filePath);
     if (!configFile.is_open())
     {
@@ -40,63 +43,59 @@ void Config::handleConfigFile(char *filePath)
     }
     std::cout << "File opened successfully!" << std::endl;
 
-    //read the file content
+    // read the file content
     content << configFile.rdbuf();
     this->_configFile = content.str();
     configFile.close();
 
-    //check syntax
-    if (!validateServerBlockStart() || !checkBracketsMatch())
+    // check syntax
+    if (!validateServerBlock() || !checkBracketsMatch())
         throw std::runtime_error("syntax error detected on input file");
 
     std::cout << "Everything seens OK" << std::endl;
 
     extractServerBlocks();
     parseServerBlocks();
-    //processServerAndLocation();
-
-    //return result in a data structure
-    std::map<std::string, std::vector<std::string> > result; //empty map, just to return;
-        
+    // createServerObjects();
 }
 
-/*  The purpose of the function checkServerBlock is to verify if the first block of the configuration file 
-    starts with the word "server" followed by an opening curly brace "{"    
+
+/* Verify if the first block of the configuration file starts with the word "server" followed by an opening curly brace "{"    
     
     BUT:
     if there is another "server" block with the wrong name (example: serv), this will not be handled    
 */
 
-bool Config::validateServerBlockStart()
+bool Config::validateServerBlock()
 {
     std::string configFileCopy = this->_configFile;
 
-    // Find the start of first word
+    // find the start of first word
     std::size_t nonSpace = configFileCopy.find_first_not_of(" \f\n\r\t\v");
     if (nonSpace == std::string::npos)
-        return false;  // String contains only whitespace.
+        return false;
 
-    // Look for the end of the first word
+    // look for the end of the first word
     std::size_t serverWordEnd = configFileCopy.find_first_of(" \f\n\r\t\v{", nonSpace);
     if (serverWordEnd == std::string::npos)
-        return false;  // There is no valid server block identifier or opening brace.
+        return false;
 
-    // Extract the first word and check if it is "server"
+    // extract the first word and check if it is "server"
     std::string firstWord = configFileCopy.substr(nonSpace, serverWordEnd - nonSpace);
     if (firstWord != "server")
-        return false;  // The first word is not "server".
+        return false;
 
-    // Find the opening brace after the "server" keyword.
+    // find the opening brace after the "server" keyword.
     std::size_t openingBrace = configFileCopy.find_first_not_of(" \f\n\r\t\v", serverWordEnd);
     if (openingBrace == std::string::npos || configFileCopy[openingBrace] != '{')
-        return false;  // There is no opening brace after the "server" keyword.
+        return false;
 
-    return true;  // The first block is a server block with the correct format.
+    return true;
 }
 
 
-/*  This function ensures that every opening brace "{" has a corresponding closing brace "}" and vice versa. 
-    If it finds any mismatch, it throws an exception.   */
+/* Ensures that every opening brace "{" has a corresponding closing brace "}" and vice versa. 
+    Also, if it finds any mismatch, it throws an exception.   */
 
 bool Config::checkBracketsMatch()
 {
@@ -120,6 +119,9 @@ bool Config::checkBracketsMatch()
     return true;
 }
 
+
+/* Extract a server block from config file and stores it in a vector of server blocks */
+
 void Config::extractServerBlocks(void)
 {
     int braces = 0;
@@ -139,20 +141,20 @@ void Config::extractServerBlocks(void)
             }
             braces++;
         }
-        else if (c == '}') //here a block has founded
+        // here a block was found
+        else if (c == '}') 
         {
             braces--;
             if (braces == 0)
             {
-                // Extract the server block substring
+                // extract the server block substring
                 this->_serverBlocks.push_back(configFileCopy.substr(blockStart, i - blockStart + 1));
-
                 insideServerBlock = false;
                 blockStart = i;
             }
         }
     } 
-    // DEGUB: Print the server block to verify it
+    // DEGUB: print the server block to verify it
     std::cout << "\nServer Block Found\n" << std::endl;
     for (size_t i = 0; i < _serverBlocks.size(); ++i)
     {
@@ -160,14 +162,17 @@ void Config::extractServerBlocks(void)
     }
 }
 
+
+/* Parse each server block stored in previous vector. First parse directives and then find and parse Location blocks */
+
 void Config::parseServerBlocks()
 {
     for (size_t i = 0; i < this->_serverBlocks.size(); ++i)
     {
-        Server server; // Create a new Server object for each server block
+        // create a new Server object for each server block
+        Server server; 
         std::string serverBlock = this->_serverBlocks[i];
 
-        // Assuming parseDirectives is a function that takes a string and a reference to a Server object and parses the directives.
         parseDirectives(serverBlock, server);
 
         //DEBUG: print directives
@@ -177,83 +182,89 @@ void Config::parseServerBlocks()
         std::cout << std::endl;
                 
 
-        // // Now find and parse all location blocks within this server block.
+        // now find and parse all location blocks within this server block.
         // std::vector<std::string> locationBlocks = extractLocationBlocks(serverBlock, server);
         
         // for (size_t j = 0; j < locationBlocks.size(); ++j)
         // {
-        //     // Assuming parseLocationBlock is a function that takes a string and returns a Location object.
         //     Location location = parseLocationBlock(locationBlocks[j]);
 
-        //     // Extract the path from the location block for the key to add the Location to the Server
+        //     // extract the path from the location block for the key to add the Location to the Server
         //     std::istringstream iss(locationBlocks[j]);
         //     std::string locationPath;
         //     iss >> locationPath; // Extract the path
 
-        //     server.addLocation(locationPath, location); // Add the Location object to the Server
+        //     // add the Location object to the Server 
+        //     server.addLocation(locationPath, location); 
         // }
 
-        //this->_servers.push_back(server); // Add the fully configured Server object to the vector
+        // add the fully configured Server object to the vector 
+        //this->_servers.push_back(server); // 
     }
-
-    // Now this->_servers contains all the Server objects representing the parsed server blocks
 }
+
+
+/* This function is part of previous function parseServerBlocks, it parses all directives and store it in a Server object */
 
 void Config::parseDirectives(const std::string &serverBlock, Server &server)
 {
     std::istringstream stream(serverBlock);
     std::string line;
 
-    // Skip the opening brace
+    // skip the opening brace
     std::getline(stream, line);
 
     while (std::getline(stream, line))
     {
-        trim(line); // Assuming 'trim' is a function to remove whitespace
+        // remove whitespace from beginning and end of string
+        trim(line); 
 
-        // Skip empty lines
+        // skip empty lines
         if (line.empty())
             continue;      
 
-        // Check if the line starts with "location", indicating the start of a location block
+        // check if the line starts with "location", indicating the start of a location block
         if (line.find("location") == 0)
         {
             break; // Exit the loop, as the remaining lines are location directives
         }
 
-        // Parse the directive
+        // parse the directive
         std::istringstream lineStream(line);
         std::string directive, value;
         lineStream >> directive;
 
-        // The rest of the line is the value; you can tailor this part based on how you expect values to be formatted
         std::getline(lineStream, value);
-        trim(value); // Trim the value too
+        trim(value);
 
-        // Store the directive in the server object
+        // store the directive in the server object
         server.setDirectives(directive, value);
     }
 }    
 
+
+/* This function is part of previous function parseDirectives it removes leading and trailing whitespace characters from a string */
+
 void Config::trim(std::string &s) 
 {
-    // Find the first character that is not a whitespace
+    // find the first character that is not a whitespace
     std::string::iterator firstNonWhitespace = std::find_if(s.begin(), s.end(), not1(std::ptr_fun<int, int>(std::isspace)));
 
-    // Erase leading whitespace
+    // frase leading whitespace
     s.erase(s.begin(), firstNonWhitespace);
 
-    // Find the last character that is not a whitespace (using reverse iterator)
+    // find the last character that is not a whitespace (using reverse iterator)
     std::string::reverse_iterator lastNonWhitespace = std::find_if(s.rbegin(), s.rend(), not1(std::ptr_fun<int, int>(std::isspace)));
 
-    // Erase trailing whitespace
-    // Convert reverse iterator to normal iterator before erasing
+    // erase trailing whitespace
+    // convert reverse iterator to normal iterator before erasing
     s.erase(lastNonWhitespace.base(), s.end());
 }
 
 
 /* DEBUG */
 
+/* Here we print all serve directives just to debug */
 void Config::printAllServerDirectives() const
 {
     for (size_t i = 0; i < _servers.size(); ++i)
@@ -263,5 +274,4 @@ void Config::printAllServerDirectives() const
         std::cout << std::endl;
     }
 }
-
 

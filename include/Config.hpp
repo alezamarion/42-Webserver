@@ -22,7 +22,7 @@ class Config
 
         void handleConfigFile(char *filePath);
         bool checkBracketsMatch(void);
-        bool validateServerBlockStart(void);
+        bool validateServerBlock(void);
         void extractServerBlocks(void);     
         void parseServerBlocks(void);
         void parseDirectives(const std::string &serverBlock, Server &server);
