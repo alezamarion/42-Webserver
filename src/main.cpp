@@ -1,7 +1,7 @@
 #include "Libs.hpp"
 #include "Config.hpp" 
 
-Config config;
+
 
 void stopAndClean(int signal)
 {
@@ -23,6 +23,8 @@ void setupSignalHandler()
 
 int main(int argc, char **argv)
 {
+    Config config;
+    
     if (argc != 2)
     {
         if (argc < 2)

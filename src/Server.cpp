@@ -20,24 +20,39 @@ Server& Server::operator=(const Server& rhs)
 {
     if (this != &rhs) // Check for self-assignment avoiding stack overflow
     { 
-        _directives = rhs._directives;
-        _locations = rhs._locations;       
+        *this = rhs;       
     }
     return *this;
 }
 
-void Server::setDirectives(const std::string &name, const std::string &value)
-{
-    _directives[name] = value;
-}
+// void Server::setDirectives(const std::string &name, const std::string &value)
+// {
 
+//     if (name == "listen")
+//     {
+//         // Convert directiveValue to the appropriate type, e.g., int
+//         // and set the corresponding member variable
+//     } 
+//     else if (name == "server_name")
+//     {
+//         // Set the server_name member variable
+//     }
+//     else if (name == "root")
+//     {
+//         // Set the root member variable
+//     }
+
+
+
+
+// }
 
 /* DEBUG */
 
-void Server::printDirectives(void) const
-{
-    for (std::map<std::string, std::string>::const_iterator it = _directives.begin(); it != _directives.end(); ++it)
-    {
-        std::cout << "  " << it->first << ": " << it->second << std::endl;
-    }
-}
+// void Server::printDirectives(void) const
+// {
+//     for (std::map<std::string, std::string>::const_iterator it = _directives.begin(); it != _directives.end(); ++it)
+//     {
+//         std::cout << "  " << it->first << ": " << it->second << std::endl;
+//     }
+// }

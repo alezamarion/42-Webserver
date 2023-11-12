@@ -173,31 +173,22 @@ void Config::parseServerBlocks()
         Server server; 
         std::string serverBlock = this->_serverBlocks[i];
 
-        parseDirectives(serverBlock, server);
+        parseDirectives(serverBlock);
+        // loadDirectives(server);
+ 
+      
+        // extractLocationBlocks();
+        // if (!locationBlocks.empty()) 
+        //      parseLocationBlocks();
+        //      loadLocationBlocks();
 
-        //DEBUG: print directives
-        _servers.push_back(server);
-        std::cout << "Directives for server " << (i + 1) << ":" << std::endl;
-        server.printDirectives();
-        std::cout << std::endl;
-                
+        // this->_servers.push_back(server);
 
-        // find and later parse all location blocks within this server block.
-        std::vector<std::string> locationBlocks = extractLocationBlocks(serverBlock);
-
-        //DEBUG:print location blocks
-        std::cout << "Extracted Location Blocks for Server " << (i + 1) << ":" << std::endl;
-        for (size_t j = 0; j < locationBlocks.size(); ++j)
-        {
-            std::cout << "Location Block " << (j + 1) << ":" << std::endl;
-            std::cout << locationBlocks[j] << std::endl << std::endl;
-        }
-
-        //if (!locationBlocks.empty())
-        //{
+        // if (!locationBlocks.empty())
+        // {
         //     for (size_t j = 0; j < locationBlocks.size(); ++j)
         //     {
-        //         Location location = parseLocationBlock(locationBlocks[j]);
+        //         parseLocationBlock(locationBlocks[j]);
 
         //         // extract the path from the location block for the key to add the Location to the Server
         //         std::istringstream iss(locationBlocks[j]);
@@ -206,17 +197,17 @@ void Config::parseServerBlocks()
 
         //         // add the Location object to the Server 
         //         server.addLocation(locationPath, location); 
-        //     }
-        // }
+//             }
+    }
         // add the fully configured Server object to the vector      
         // this->_servers.push_back(server);
-    }
 }
+
 
 
 /* This function is part of previous function parseServerBlocks, it parses all directives and store it in a Server object */
 
-void Config::parseDirectives(const std::string &serverBlock, Server &server)
+void Config::parseDirectives(const std::string &serverBlock)
 {
     std::istringstream stream(serverBlock);
     std::string line;
@@ -248,7 +239,7 @@ void Config::parseDirectives(const std::string &serverBlock, Server &server)
         trim(value);
 
         // store the directive in the server object
-        server.setDirectives(directive, value);
+        _parsedDirectives[directive] = value;
     }
 }    
 
@@ -270,6 +261,12 @@ void Config::trim(std::string &s)
     // convert reverse iterator to normal iterator before erasing
     s.erase(lastNonWhitespace.base(), s.end());
 }
+
+
+/* Load directives parsed in a Server object */
+
+//
+
 
 
 /* Extract all location blocks inside configuration file and store it in a string vector */
@@ -311,20 +308,25 @@ std::vector<std::string> Config::extractLocationBlocks(std::string &serverBlock)
 }
 
 
+/* Parse location blocks and store it in a Location object, inside Server Class */
 
+// Location Config::parseLocationBlock(std::string locationBlocks)
+// {
+
+// }
 
 
 
 /* DEBUG */
 
 /* Here we print all serve directives just to debug */
-void Config::printAllServerDirectives() const
-{
-    for (size_t i = 0; i < _servers.size(); ++i)
-    {
-        std::cout << "Server " << (i + 1) << ":" << std::endl;
-        _servers[i].printDirectives();
-        std::cout << std::endl;
-    }
-}
+// void Config::printAllServerDirectives() const
+// {
+//     for (size_t i = 0; i < _servers.size(); ++i)
+//     {
+//         std::cout << "Server " << (i + 1) << ":" << std::endl;
+//         _servers[i].printDirectives();
+//         std::cout << std::endl;
+//     }
+// }
 

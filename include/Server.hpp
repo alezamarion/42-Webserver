@@ -29,7 +29,15 @@ class Server
 
 
     private:
-        std::map<std::string, std::string> _directives; //std::map stores its elements in a sorted order based on the key.
+        int listen;
+        int autoindex;
+        int client_max_body_size;
+        std::string root;
+        std::vector<std::string> index;
+        std::vector<std::string> server_name;
+        std::map<std::string, std::string> cgi;
+        std::map<int, std::string> error_page;
+        std::pair<int, std::string> redirect;
         std::map<std::string, Location> _locations; 
 
 };
