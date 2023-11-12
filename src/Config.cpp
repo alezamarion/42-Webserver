@@ -182,24 +182,34 @@ void Config::parseServerBlocks()
         std::cout << std::endl;
                 
 
-        // now find and parse all location blocks within this server block.
-        // std::vector<std::string> locationBlocks = extractLocationBlocks(serverBlock, server);
-        
-        // for (size_t j = 0; j < locationBlocks.size(); ++j)
-        // {
-        //     Location location = parseLocationBlock(locationBlocks[j]);
+        // find and later parse all location blocks within this server block.
+        std::vector<std::string> locationBlocks = extractLocationBlocks(serverBlock);
 
-        //     // extract the path from the location block for the key to add the Location to the Server
-        //     std::istringstream iss(locationBlocks[j]);
-        //     std::string locationPath;
-        //     iss >> locationPath; // Extract the path
+        //DEBUG:print location blocks
+        std::cout << "Extracted Location Blocks for Server " << (i + 1) << ":" << std::endl;
+        for (size_t j = 0; j < locationBlocks.size(); ++j)
+        {
+            std::cout << "Location Block " << (j + 1) << ":" << std::endl;
+            std::cout << locationBlocks[j] << std::endl << std::endl;
+        }
 
-        //     // add the Location object to the Server 
-        //     server.addLocation(locationPath, location); 
+        //if (!locationBlocks.empty())
+        //{
+        //     for (size_t j = 0; j < locationBlocks.size(); ++j)
+        //     {
+        //         Location location = parseLocationBlock(locationBlocks[j]);
+
+        //         // extract the path from the location block for the key to add the Location to the Server
+        //         std::istringstream iss(locationBlocks[j]);
+        //         std::string locationPath;
+        //         iss >> locationPath; // Extract the path
+
+        //         // add the Location object to the Server 
+        //         server.addLocation(locationPath, location); 
+        //     }
         // }
-
-        // add the fully configured Server object to the vector 
-        //this->_servers.push_back(server); // 
+        // add the fully configured Server object to the vector      
+        // this->_servers.push_back(server);
     }
 }
 
@@ -260,6 +270,49 @@ void Config::trim(std::string &s)
     // convert reverse iterator to normal iterator before erasing
     s.erase(lastNonWhitespace.base(), s.end());
 }
+
+
+/* Extract all location blocks inside configuration file and store it in a string vector */
+
+std::vector<std::string> Config::extractLocationBlocks(std::string &serverBlock)
+{
+    std::vector<std::string> locationBlocks;
+    std::size_t startPos = 0;
+    startPos = serverBlock.find("location", startPos);
+
+    while (startPos != std::string::npos)
+    {
+        // find the opening curly brace of the location block
+        std::size_t braceOpen = serverBlock.find('{', startPos);
+        
+        // error handling if '{' is not found
+        if (braceOpen == std::string::npos) break; 
+
+        // find the closing curly brace, considering nested braces
+        int braceCount = 1;
+        std::size_t braceClose = braceOpen;
+        while (braceCount > 0 && ++braceClose < serverBlock.length())
+        {
+            if (serverBlock[braceClose] == '{') braceCount++;
+            else if (serverBlock[braceClose] == '}') braceCount--;
+        }
+
+        // error handling for unmatched brace
+        if (braceCount != 0) break;
+
+        // extract the location block
+        std::string locationBlock = serverBlock.substr(startPos, braceClose - startPos + 1);
+        locationBlocks.push_back(locationBlock);
+
+        // move to the next part of the string
+        startPos = serverBlock.find("location", startPos + 1);
+    }
+    return locationBlocks;
+}
+
+
+
+
 
 
 /* DEBUG */

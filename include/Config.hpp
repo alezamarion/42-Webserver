@@ -27,6 +27,7 @@ class Config
         void parseServerBlocks(void);
         void parseDirectives(const std::string &serverBlock, Server &server);
         void trim(std::string &s);
+        std::vector<std::string> extractLocationBlocks(std::string &serverBlock);
 
         //debug:
         void printAllServerDirectives() const;
