@@ -198,10 +198,11 @@ void Config::parseServerBlocks()
 
         //         // add the Location object to the Server 
         //         server.addLocation(locationPath, location); 
-//             }
-    }
+        //     }
+        // }
         // add the fully configured Server object to the vector      
         // this->_servers.push_back(server);
+    }
 }
 
 
@@ -264,11 +265,6 @@ void Config::trim(std::string &s)
 }
 
 
-/* Load directives parsed in a Server object */
-
-//
-
-
 
 /* Extract all location blocks inside configuration file and store it in a string vector */
 
@@ -307,14 +303,6 @@ std::vector<std::string> Config::extractLocationBlocks(std::string &serverBlock)
     }
     return locationBlocks;
 }
-
-
-/* Parse location blocks and store it in a Location object, inside Server Class */
-
-// Location Config::parseLocationBlock(std::string locationBlocks)
-// {
-
-// }
 
 
 
