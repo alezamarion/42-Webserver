@@ -20,24 +20,22 @@ class Server
         Server &operator=(Server const &rhs);
 
         //methods:
-        void setDirectives(const std::string &name, const std::string &value);
+        void setDirectives(const std::map<std::string, std::string> &parsedDirectives);
 
         //debug:
-        void printAllServerDirectives() const;
-        void printDirectives(void) const;
-
+        void printServerConfig() const;
 
 
     private:
-        int listen;
-        int autoindex;
-        int client_max_body_size;
-        std::string root;
-        std::vector<std::string> index;
-        std::vector<std::string> server_name;
-        std::map<std::string, std::string> cgi;
-        std::map<int, std::string> error_page;
-        std::pair<int, std::string> redirect;
+        int _listen;
+        int _autoindex;
+        int _client_max_body_size;
+        std::string _root;
+        std::vector<std::string> _index;
+        std::vector<std::string> _server_name;
+        std::map<std::string, std::string> _cgi;
+        std::map<int, std::string> _error_page;
+        std::map<int, std::string> _redirect;
         std::map<std::string, Location> _locations; 
 
 };

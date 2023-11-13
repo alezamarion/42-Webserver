@@ -174,7 +174,8 @@ void Config::parseServerBlocks()
         std::string serverBlock = this->_serverBlocks[i];
 
         parseDirectives(serverBlock);
-        // loadDirectives(server);
+        server.setDirectives(_parsedDirectives);
+        server.printServerConfig();
  
       
         // extractLocationBlocks();
@@ -215,6 +216,8 @@ void Config::parseDirectives(const std::string &serverBlock)
     // skip the opening brace
     std::getline(stream, line);
 
+    _parsedDirectives.clear();
+
     while (std::getline(stream, line))
     {
         // remove whitespace from beginning and end of string
@@ -226,9 +229,7 @@ void Config::parseDirectives(const std::string &serverBlock)
 
         // check if the line starts with "location", indicating the start of a location block
         if (line.find("location") == 0)
-        {
             break; // Exit the loop, as the remaining lines are location directives
-        }
 
         // parse the directive
         std::istringstream lineStream(line);
