@@ -12,7 +12,7 @@ CFLAGS		= 	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
 DIR_SRCS	=	src
 DIR_BUILD	=	build
 
-SRCS		=	$(DIR_SRCS)/main.cpp $(DIR_SRCS)/Config.cpp $(DIR_SRCS)/Server.cpp $(DIR_SRCS)/Location.cpp
+SRCS		=	$(DIR_SRCS)/main.cpp $(DIR_SRCS)/ConfigParser.cpp $(DIR_SRCS)/ConfigSpec.cpp $(DIR_SRCS)/Location.cpp
 
 
 

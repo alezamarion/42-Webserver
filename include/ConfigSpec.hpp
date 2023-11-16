@@ -1,38 +1,42 @@
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#ifndef ConfigSpec_HPP
+#define ConfigSpec_HPP
 
 #include "Libs.hpp"
 #include "Location.hpp"
 
-class Server
+class ConfigSpec
 {
     public:
         // Constructors
-        Server(void);
+        ConfigSpec(void);
 
         // Copy constructor
-        Server(Server const &src);
+        ConfigSpec(ConfigSpec const &src);
 
         // Destructor
-        ~Server(void);
+        ~ConfigSpec(void);
 
         // Copy assignment operator
-        Server &operator=(Server const &rhs);
+        ConfigSpec &operator=(ConfigSpec const &rhs);
 
         //methods:
         void setDirectives(const std::map<std::string, std::string> &parsedDirectives);
 
         //debug:
-        void printServerConfig() const;
+        void printServerDirectives() const;
 
 
     private:
+
+        std::map<std::string, std::string> _ConfigParseruracoes;
+        //                                  _location;
+
         int _listen;
         int _autoindex;
         int _client_max_body_size;
         std::string _root;
         std::vector<std::string> _index;
-        std::vector<std::string> _server_name;
+        std::vector<std::string> _ConfigSpec_name;
         std::map<std::string, std::string> _cgi;
         std::map<int, std::string> _error_page;
         std::map<int, std::string> _redirect;
@@ -41,3 +45,8 @@ class Server
 };
 
 #endif
+
+
+//- classe ConfigParserParser -> parseia o arquivo e gera 1 ConfigParser spec para cada ConfigSpec
+//- classe ConfigSpec; -> os getters fazer o parse getters diretivas e os getters do location
+

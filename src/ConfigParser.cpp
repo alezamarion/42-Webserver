@@ -1,26 +1,26 @@
-#include "Config.hpp"
+#include "ConfigParser.hpp"
 
-Config::Config(void)
+ConfigParser::ConfigParser(void)
 {
     return;
 }
 
-Config::Config(std::string const &filePath)
+ConfigParser::ConfigParser(std::string const &filePath)
 {
     this->_filePath = filePath;
 }
 
-Config::Config(Config const &src)
+ConfigParser::ConfigParser(ConfigParser const &src)
 {
    *this = src; 
 }
 
-Config::~Config(void)
+ConfigParser::~ConfigParser(void)
 {
     return;
 }
 
-Config &Config::operator=(const Config &rhs)
+ConfigParser &ConfigParser::operator=(const ConfigParser &rhs)
 {
     if (this != &rhs) // Check for self-assignment to avoid stack overflow
         *this = rhs; 
@@ -28,9 +28,9 @@ Config &Config::operator=(const Config &rhs)
 }
 
 
-/* Extract information from the configuration file and then create a server object for each server that exists in the configuration file. The following functions are part of this */
+/* Extract information from the ConfigParseruration file and then create a ConfigSpec object for each ConfigSpec that exists in the ConfigParseruration file. The following functions are part of this */
 
-void Config::handleConfigFile(char *filePath)
+void ConfigParser::handleConfigParserFile(char *filePath)
 {
     std::ifstream configFile;
     std::stringstream content;
@@ -56,17 +56,16 @@ void Config::handleConfigFile(char *filePath)
 
     extractServerBlocks();
     parseServerBlocks();
-    // createServerObjects();
 }
 
 
-/* Verify if the first block of the configuration file starts with the word "server" followed by an opening curly brace "{"    
+/* Verify if the first block of the ConfigParseruration file starts with the word "ConfigSpec" followed by an opening curly brace "{"    
     
     BUT:
-    if there is another "server" block with the wrong name (example: serv), this will not be handled    
+    if there is another "ConfigSpec" block with the wrong name (example: serv), this will not be handled    
 */
 
-bool Config::validateServerBlock()
+bool ConfigParser::validateServerBlock()
 {
     std::string configFileCopy = this->_configFile;
 
@@ -80,12 +79,12 @@ bool Config::validateServerBlock()
     if (serverWordEnd == std::string::npos)
         return false;
 
-    // extract the first word and check if it is "server"
+    // extract the first word and check if it is "ConfigSpec"
     std::string firstWord = configFileCopy.substr(nonSpace, serverWordEnd - nonSpace);
-    if (firstWord != "server")
+    if (firstWord != "Server")
         return false;
 
-    // find the opening brace after the "server" keyword.
+    // find the opening brace after the "ConfigSpec" keyword.
     std::size_t openingBrace = configFileCopy.find_first_not_of(" \f\n\r\t\v", serverWordEnd);
     if (openingBrace == std::string::npos || configFileCopy[openingBrace] != '{')
         return false;
@@ -97,7 +96,7 @@ bool Config::validateServerBlock()
 /* Ensures that every opening brace "{" has a corresponding closing brace "}" and vice versa. 
     Also, if it finds any mismatch, it throws an exception.   */
 
-bool Config::checkBracketsMatch()
+bool ConfigParser::checkBracketsMatch()
 {
     std::stack<char> brackets;
     std::string configFileCopy = this->_configFile;
@@ -120,9 +119,9 @@ bool Config::checkBracketsMatch()
 }
 
 
-/* Extract a server block from config file and stores it in a vector of server blocks */
+/* Extract a ConfigSpec block from ConfigParser file and stores it in a vector of ConfigSpec blocks */
 
-void Config::extractServerBlocks(void)
+void ConfigParser::extractServerBlocks(void)
 {
     int braces = 0;
     size_t blockStart = 0;
@@ -147,14 +146,14 @@ void Config::extractServerBlocks(void)
             braces--;
             if (braces == 0)
             {
-                // extract the server block substring
+                // extract the ConfigSpec block substring
                 this->_serverBlocks.push_back(configFileCopy.substr(blockStart, i - blockStart + 1));
                 insideServerBlock = false;
                 blockStart = i;
             }
         }
     } 
-    // DEGUB: print the server block to verify it
+    // DEGUB: print the ConfigSpec block to verify it
     std::cout << "\nServer Block Found\n" << std::endl;
     for (size_t i = 0; i < _serverBlocks.size(); ++i)
     {
@@ -163,55 +162,42 @@ void Config::extractServerBlocks(void)
 }
 
 
-/* Parse each server block stored in previous vector. First parse directives and then find and parse Location blocks */
+/* Parse each ConfigSpec block stored in previous vector. First parse directives and then find and parse Location blocks */
 
-void Config::parseServerBlocks()
+void ConfigParser::parseServerBlocks()
 {
     for (size_t i = 0; i < this->_serverBlocks.size(); ++i)
     {
-        // create a new Server object for each server block
-        Server server; 
-        std::string serverBlock = this->_serverBlocks[i];
+        // create a new ConfigSpec object for each ConfigSpec block
+        ConfigSpec ConfigSpec; 
+        std::string ConfigSpecBlock = this->_serverBlocks[i];
 
-        parseDirectives(serverBlock);
-        server.setDirectives(_parsedDirectives);
-        server.printServerConfig();
+        parseDirectives(ConfigSpecBlock);
+        ConfigSpec.setDirectives(_parsedDirectives);
+
+        //DEBUG:
+        ConfigSpec.printServerDirectives();
  
-      
-        // extractLocationBlocks();
-        // if (!locationBlocks.empty()) 
-        //      parseLocationBlocks();
-        //      loadLocationBlocks();
+        extractLocationBlocks(ConfigSpecBlock);
 
-        // this->_servers.push_back(server);
+        //DEBUG:
+        printLocationBlocks();
 
-        // if (!locationBlocks.empty())
-        // {
-        //     for (size_t j = 0; j < locationBlocks.size(); ++j)
-        //     {
-        //         parseLocationBlock(locationBlocks[j]);
+        // parseLocationBlocks();
+        // loadLocationBlocks();
 
-        //         // extract the path from the location block for the key to add the Location to the Server
-        //         std::istringstream iss(locationBlocks[j]);
-        //         std::string locationPath;
-        //         iss >> locationPath; // Extract the path
-
-        //         // add the Location object to the Server 
-        //         server.addLocation(locationPath, location); 
-        //     }
-        // }
-        // add the fully configured Server object to the vector      
-        // this->_servers.push_back(server);
+        // add the fully ConfigParserured ConfigSpec object to the vector      
+        // this->_ConfigSpecs.push_back(ConfigSpec);
     }
 }
 
 
 
-/* This function is part of previous function parseServerBlocks, it parses all directives and store it in a Server object */
+/* This function is part of previous function parseConfigSpecBlocks, it parses all directives and store it in a ConfigSpec object */
 
-void Config::parseDirectives(const std::string &serverBlock)
+void ConfigParser::parseDirectives(const std::string &ConfigSpecBlock)
 {
-    std::istringstream stream(serverBlock);
+    std::istringstream stream(ConfigSpecBlock);
     std::string line;
 
     // skip the opening brace
@@ -240,7 +226,7 @@ void Config::parseDirectives(const std::string &serverBlock)
         std::getline(lineStream, value);
         trim(value);
 
-        // store the directive in the server object
+        // store the directive in the ConfigSpec object
         _parsedDirectives[directive] = value;
     }
 }    
@@ -248,7 +234,7 @@ void Config::parseDirectives(const std::string &serverBlock)
 
 /* This function is part of previous function parseDirectives it removes leading and trailing whitespace characters from a string */
 
-void Config::trim(std::string &s) 
+void ConfigParser::trim(std::string &s) 
 {
     // find the first character that is not a whitespace
     std::string::iterator firstNonWhitespace = std::find_if(s.begin(), s.end(), not1(std::ptr_fun<int, int>(std::isspace)));
@@ -266,56 +252,82 @@ void Config::trim(std::string &s)
 
 
 
-/* Extract all location blocks inside configuration file and store it in a string vector */
+/* Extract all location blocks inside ConfigParseruration file and store it in a string vector */
 
-std::vector<std::string> Config::extractLocationBlocks(std::string &serverBlock)
+void ConfigParser::extractLocationBlocks(std::string &ConfigSpecBlock)
 {
-    std::vector<std::string> locationBlocks;
     std::size_t startPos = 0;
-    startPos = serverBlock.find("location", startPos);
+    startPos = ConfigSpecBlock.find("location", startPos);
+
+    _locationBlocks.clear();
 
     while (startPos != std::string::npos)
     {
         // find the opening curly brace of the location block
-        std::size_t braceOpen = serverBlock.find('{', startPos);
+        std::size_t braceOpen = ConfigSpecBlock.find('{', startPos);
         
         // error handling if '{' is not found
-        if (braceOpen == std::string::npos) break; 
+        if (braceOpen == std::string::npos)
+            break; 
 
         // find the closing curly brace, considering nested braces
         int braceCount = 1;
         std::size_t braceClose = braceOpen;
-        while (braceCount > 0 && ++braceClose < serverBlock.length())
+        while (braceCount > 0 && ++braceClose < ConfigSpecBlock.length())
         {
-            if (serverBlock[braceClose] == '{') braceCount++;
-            else if (serverBlock[braceClose] == '}') braceCount--;
+            if (ConfigSpecBlock[braceClose] == '{')
+                braceCount++;
+            else if (ConfigSpecBlock[braceClose] == '}')
+                braceCount--;
         }
 
         // error handling for unmatched brace
-        if (braceCount != 0) break;
+        if (braceCount != 0)
+            break;
 
         // extract the location block
-        std::string locationBlock = serverBlock.substr(startPos, braceClose - startPos + 1);
-        locationBlocks.push_back(locationBlock);
+        std::string locationBlock = ConfigSpecBlock.substr(startPos, braceClose - startPos + 1);
+        _locationBlocks.push_back(locationBlock);
 
         // move to the next part of the string
-        startPos = serverBlock.find("location", startPos + 1);
+        startPos = braceClose + 1;
     }
-    return locationBlocks;
 }
 
 
 
 /* DEBUG */
 
-/* Here we print all serve directives just to debug */
-// void Config::printAllServerDirectives() const
-// {
-//     for (size_t i = 0; i < _servers.size(); ++i)
-//     {
-//         std::cout << "Server " << (i + 1) << ":" << std::endl;
-//         _servers[i].printDirectives();
-//         std::cout << std::endl;
-//     }
-// }
+void ConfigParser::printLocationBlocks(void) const
+{
+    std::cout << "Extracted Location Blocks:\n" << std::endl;
+    for (size_t i = 0; i < _locationBlocks.size(); ++i)
+    {
+        std::cout << "Location Block " << (i + 1) << ":" << std::endl;
+        std::cout << _locationBlocks[i] << std::endl << std::endl;
+    }
+}
 
+
+
+
+
+//parsing:
+
+        // this->_ConfigSpecs.push_back(ConfigSpec);
+
+        // if (!locationBlocks.empty())
+        // {
+        //     for (size_t j = 0; j < locationBlocks.size(); ++j)
+        //     {
+        //         parseLocationBlock(locationBlocks[j]);
+
+        //         // extract the path from the location block for the key to add the Location to the ConfigSpec
+        //         std::istringstream iss(locationBlocks[j]);
+        //         std::string locationPath;
+        //         iss >> locationPath; // Extract the path
+
+        //         // add the Location object to the ConfigSpec 
+        //         ConfigSpec.addLocation(locationPath, location); 
+        //     }
+        // }

@@ -1,5 +1,5 @@
 {
-  "configurations": [
+  "ConfigParserurations": [
     {
       "name": "linux-gcc-x64",
       "includePath": [

@@ -1,5 +1,5 @@
 #include "Libs.hpp"
-#include "Config.hpp" 
+#include "ConfigParser.hpp" 
 
 
 
@@ -8,7 +8,7 @@ void stopAndClean(int signal)
     std::cout << '\n';
     std::cout << "CTRL + C received: freeing up resources" << std::endl;
     (void)signal;
-    //webserver.stop()
+    //webConfigSpec.stop()
     exit(0);
 }
 
@@ -23,19 +23,19 @@ void setupSignalHandler()
 
 int main(int argc, char **argv)
 {
-    Config config;
+    ConfigParser ConfigParser;
     
     if (argc != 2)
     {
         if (argc < 2)
-            std::cerr << "Error: missing configuration file" << std::endl;
+            std::cerr << "Error: missing ConfigParseruration file" << std::endl;
         if (argc > 2)
             std::cerr << "Error: too many arguments" << std::endl;
         return (1);
     }
 
     setupSignalHandler();
-    config.handleConfigFile(argv[1]);
+    ConfigParser.handleConfigParserFile(argv[1]);
 
     (void)**argv;
 
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     while (true){}
 
-    /* return(webserver.run(argv[1])); */
+    /* return(webConfigSpec.run(argv[1])); */
 }
 
 

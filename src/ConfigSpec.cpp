@@ -1,22 +1,22 @@
-#include "Server.hpp"
+#include "ConfigSpec.hpp"
 
 
-Server::Server(void)
+ConfigSpec::ConfigSpec(void)
 {
     return;
 }
 
-Server::Server(Server const &src)
+ConfigSpec::ConfigSpec(ConfigSpec const &src)
 {
    *this = src; 
 }
 
-Server::~Server(void)
+ConfigSpec::~ConfigSpec(void)
 {
     return;
 }
 
-Server& Server::operator=(const Server& rhs)
+ConfigSpec& ConfigSpec::operator=(const ConfigSpec& rhs)
 {
     if (this != &rhs) // Check for self-assignment avoiding stack overflow
     { 
@@ -25,7 +25,7 @@ Server& Server::operator=(const Server& rhs)
     return *this;
 }
 
-void Server::setDirectives(const std::map<std::string, std::string> &parsedDirectives)
+void ConfigSpec::setDirectives(const std::map<std::string, std::string> &parsedDirectives)
 {
     std::map<std::string, std::string>::const_iterator it;
     for (it = parsedDirectives.begin(); it != parsedDirectives.end(); ++it)
@@ -58,14 +58,14 @@ void Server::setDirectives(const std::map<std::string, std::string> &parsedDirec
             while (valueStream >> singleValue)
                 this->_index.push_back(singleValue);
         }
-        else if (directiveName == "server_name")
+        else if (directiveName == "ConfigSpec_name")
         {
             std::istringstream valueStream(directiveValue);
             std::string singleValue;
             //this->index.clear();
 
             while (valueStream >> singleValue)
-                this->_server_name.push_back(singleValue);
+                this->_ConfigSpec_name.push_back(singleValue);
         }
         else if (directiveName == "cgi")
         {
@@ -98,9 +98,9 @@ void Server::setDirectives(const std::map<std::string, std::string> &parsedDirec
 
 /* DEBUG */
 
-void Server::printServerConfig(void) const
+void ConfigSpec::printServerDirectives(void) const
 {
-    std::cout << "Server Configuration:\n" << std::endl;
+    std::cout << "Server configuration:\n" << std::endl;
     std::cout << "  Listen: " << _listen << std::endl;
     std::cout << "  Autoindex: " << _autoindex << std::endl;
     std::cout << "  Client Max Body Size: " << _client_max_body_size << std::endl;
@@ -112,9 +112,9 @@ void Server::printServerConfig(void) const
     }
     std::cout << std::endl;
 
-    std::cout << "  Server Names: ";
-    for (size_t i = 0; i < _server_name.size(); ++i) {
-        std::cout << _server_name[i] << (i < _server_name.size() - 1 ? ", " : "");
+    std::cout << "  ConfigSpec Names: ";
+    for (size_t i = 0; i < _ConfigSpec_name.size(); ++i) {
+        std::cout << _ConfigSpec_name[i] << (i < _ConfigSpec_name.size() - 1 ? ", " : "");
     }
     std::cout << std::endl;
 
