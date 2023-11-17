@@ -98,39 +98,3 @@ void ConfigSpec::setDirectives(const std::map<std::string, std::string> &parsedD
 
 /* DEBUG */
 
-void ConfigSpec::printServerDirectives(void) const
-{
-    std::cout << "Server configuration:\n" << std::endl;
-    std::cout << "  Listen: " << _listen << std::endl;
-    std::cout << "  Autoindex: " << _autoindex << std::endl;
-    std::cout << "  Client Max Body Size: " << _client_max_body_size << std::endl;
-    std::cout << "  Root: " << _root << std::endl;
-
-    std::cout << "  Index Files: ";
-    for (size_t i = 0; i < _index.size(); ++i) {
-        std::cout << _index[i] << (i < _index.size() - 1 ? ", " : "");
-    }
-    std::cout << std::endl;
-
-    std::cout << "  ConfigSpec Names: ";
-    for (size_t i = 0; i < _ConfigSpec_name.size(); ++i) {
-        std::cout << _ConfigSpec_name[i] << (i < _ConfigSpec_name.size() - 1 ? ", " : "");
-    }
-    std::cout << std::endl;
-
-    std::cout << "  CGI Handlers:" << std::endl;
-    for (std::map<std::string, std::string>::const_iterator it = _cgi.begin(); it != _cgi.end(); ++it) {
-        std::cout << "    " << it->first << " => " << it->second << std::endl;
-    }
-
-    std::cout << "  Error Pages:" << std::endl;
-    for (std::map<int, std::string>::const_iterator it = _error_page.begin(); it != _error_page.end(); ++it) {
-        std::cout << "    " << it->first << " => " << it->second << std::endl;
-    }
-
-    std::cout << "  Redirects:" << std::endl;
-    for (std::map<int, std::string>::const_iterator it = _redirect.begin(); it != _redirect.end(); ++it) {
-        std::cout << "    " << it->first << " => " << it->second << std::endl;
-    }
-
-}

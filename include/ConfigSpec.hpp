@@ -23,13 +23,11 @@ class ConfigSpec
         void setDirectives(const std::map<std::string, std::string> &parsedDirectives);
 
         //debug:
-        void printServerDirectives() const;
+
 
 
     private:
-
-        std::map<std::string, std::string> _ConfigParseruracoes;
-        //                                  _location;
+        std::map<std::string, std::string> _parsedDirectives;
 
         int _listen;
         int _autoindex;
@@ -47,6 +45,6 @@ class ConfigSpec
 #endif
 
 
-//- classe ConfigParserParser -> parseia o arquivo e gera 1 ConfigParser spec para cada ConfigSpec
+//- classe ConfigParser -> parseia o arquivo e gera 1 ConfigParser spec para cada ConfigSpec
 //- classe ConfigSpec; -> os getters fazer o parse getters diretivas e os getters do location
 

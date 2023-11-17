@@ -166,28 +166,31 @@ void ConfigParser::extractServerBlocks(void)
 
 void ConfigParser::parseServerBlocks()
 {
+    _configSpecs.clear(); 
+
     for (size_t i = 0; i < this->_serverBlocks.size(); ++i)
     {
-        // create a new ConfigSpec object for each ConfigSpec block
-        ConfigSpec ConfigSpec; 
-        std::string ConfigSpecBlock = this->_serverBlocks[i];
+        ConfigSpec configSpec;
+        std::string serverBlock = this->_serverBlocks[i];
 
-        parseDirectives(ConfigSpecBlock);
-        ConfigSpec.setDirectives(_parsedDirectives);
+        parseDirectives(serverBlock);
+        //DEBUG
+        printParsedDirectives();
 
-        //DEBUG:
-        ConfigSpec.printServerDirectives();
- 
-        extractLocationBlocks(ConfigSpecBlock);
-
+        extractLocationBlocks(serverBlock);
         //DEBUG:
         printLocationBlocks();
 
-        // parseLocationBlocks();
-        // loadLocationBlocks();
+        parseLocationBlocks();
+        //DEBUG:
+        printParsedLocationBlocks();
+        
+        // transfer parsed data to ConfigSpec object;
+        //configSpec.setdirectives(_parsedDirectives)
+        // configSpec.setLocationBlocks(_parsedLocationBlocks);
 
-        // add the fully ConfigParserured ConfigSpec object to the vector      
-        // this->_ConfigSpecs.push_back(ConfigSpec);
+        // add the fully populated ConfigSpec object to the vector      
+        // _configSpecs.push_back(configSpec);
     }
 }
 
@@ -195,9 +198,9 @@ void ConfigParser::parseServerBlocks()
 
 /* This function is part of previous function parseConfigSpecBlocks, it parses all directives and store it in a ConfigSpec object */
 
-void ConfigParser::parseDirectives(const std::string &ConfigSpecBlock)
+void ConfigParser::parseDirectives(const std::string &serverBlock)
 {
-    std::istringstream stream(ConfigSpecBlock);
+    std::istringstream stream(serverBlock);
     std::string line;
 
     // skip the opening brace
@@ -234,37 +237,41 @@ void ConfigParser::parseDirectives(const std::string &ConfigSpecBlock)
 
 /* This function is part of previous function parseDirectives it removes leading and trailing whitespace characters from a string */
 
-void ConfigParser::trim(std::string &s) 
+void ConfigParser::trim(std::string &string) 
 {
+    // Check if the string is empty
+    if (string.empty())
+        return;
+
     // find the first character that is not a whitespace
-    std::string::iterator firstNonWhitespace = std::find_if(s.begin(), s.end(), not1(std::ptr_fun<int, int>(std::isspace)));
+    std::string::iterator firstNonWhitespace = std::find_if(string.begin(), string.end(), not1(std::ptr_fun<int, int>(std::isspace)));
 
     // frase leading whitespace
-    s.erase(s.begin(), firstNonWhitespace);
+    string.erase(string.begin(), firstNonWhitespace);
 
     // find the last character that is not a whitespace (using reverse iterator)
-    std::string::reverse_iterator lastNonWhitespace = std::find_if(s.rbegin(), s.rend(), not1(std::ptr_fun<int, int>(std::isspace)));
+    std::string::reverse_iterator lastNonWhitespace = std::find_if(string.rbegin(), string.rend(), not1(std::ptr_fun<int, int>(std::isspace)));
 
     // erase trailing whitespace
     // convert reverse iterator to normal iterator before erasing
-    s.erase(lastNonWhitespace.base(), s.end());
+    string.erase(lastNonWhitespace.base(), string.end());
 }
 
 
 
 /* Extract all location blocks inside ConfigParseruration file and store it in a string vector */
 
-void ConfigParser::extractLocationBlocks(std::string &ConfigSpecBlock)
+void ConfigParser::extractLocationBlocks(std::string &serverBlock)
 {
     std::size_t startPos = 0;
-    startPos = ConfigSpecBlock.find("location", startPos);
+    startPos = serverBlock.find("location", startPos);
 
     _locationBlocks.clear();
 
     while (startPos != std::string::npos)
     {
         // find the opening curly brace of the location block
-        std::size_t braceOpen = ConfigSpecBlock.find('{', startPos);
+        std::size_t braceOpen = serverBlock.find('{', startPos);
         
         // error handling if '{' is not found
         if (braceOpen == std::string::npos)
@@ -273,11 +280,11 @@ void ConfigParser::extractLocationBlocks(std::string &ConfigSpecBlock)
         // find the closing curly brace, considering nested braces
         int braceCount = 1;
         std::size_t braceClose = braceOpen;
-        while (braceCount > 0 && ++braceClose < ConfigSpecBlock.length())
+        while (braceCount > 0 && ++braceClose < serverBlock.length())
         {
-            if (ConfigSpecBlock[braceClose] == '{')
+            if (serverBlock[braceClose] == '{')
                 braceCount++;
-            else if (ConfigSpecBlock[braceClose] == '}')
+            else if (serverBlock[braceClose] == '}')
                 braceCount--;
         }
 
@@ -286,7 +293,7 @@ void ConfigParser::extractLocationBlocks(std::string &ConfigSpecBlock)
             break;
 
         // extract the location block
-        std::string locationBlock = ConfigSpecBlock.substr(startPos, braceClose - startPos + 1);
+        std::string locationBlock = serverBlock.substr(startPos, braceClose - startPos + 1);
         _locationBlocks.push_back(locationBlock);
 
         // move to the next part of the string
@@ -296,38 +303,177 @@ void ConfigParser::extractLocationBlocks(std::string &ConfigSpecBlock)
 
 
 
-/* DEBUG */
+/* Parse location blocks and store id in */
 
-void ConfigParser::printLocationBlocks(void) const
+void ConfigParser::parseLocationBlocks(void)
 {
-    std::cout << "Extracted Location Blocks:\n" << std::endl;
+    _parsedLocationBlocks.clear();
+
     for (size_t i = 0; i < _locationBlocks.size(); ++i)
     {
-        std::cout << "Location Block " << (i + 1) << ":" << std::endl;
-        std::cout << _locationBlocks[i] << std::endl << std::endl;
+        std::string block = _locationBlocks[i];
+
+        // extract location path from the block
+        extractLocationPath(block);
+
+        // parse directives within this block
+        parseDirectivesInLocation(block);
+
+        // store the directives map in the _parsedLocationBlocks
+        _parsedLocationBlocks[_locationPath] = _locationDirectives;
     }
+}
+
+void ConfigParser::extractLocationPath(const std::string& block)
+{
+    _locationPath.clear();
+
+    std::istringstream stream(block);
+    std::string line;
+
+    while (std::getline(stream, line))
+    {
+        trim(line);
+
+        if (line.empty())
+            continue;
+
+        // the first line should start with "location", followed by the path.
+        std::size_t locationStart = line.find("location");
+        if (locationStart != std::string::npos)
+        {
+            std::size_t pathStart = line.find_first_not_of(" ", locationStart + 8); // 8 is the length of "location"
+            std::size_t pathEnd = line.find_first_of(" {", pathStart);
+
+            if (pathStart != std::string::npos && pathEnd != std::string::npos)
+            {
+                _locationPath = line.substr(pathStart, pathEnd - pathStart);
+                return;
+            }
+        }
+        throw std::runtime_error("Location path not found in the location block");
+    }
+     throw std::runtime_error("Empty location block encountered");
+}
+
+
+void ConfigParser::parseDirectivesInLocation(const std::string &block)
+{
+    _locationDirectives.clear();
+
+    std::istringstream stream(block);
+    std::string line;
+
+    // skip the first line as it contains the location path
+    std::getline(stream, line);
+
+    while (std::getline(stream, line))
+    {
+        // trim whitespace
+        trim(line); 
+
+        // skip empty lines and the closing brace
+        if (line.empty() || line == "}")
+            continue;
+
+        std::istringstream lineStream(line);
+        std::string directive, value;
+
+        // get the directive name
+        lineStream >> directive;
+
+        // read the rest of the line as the directive value
+        std::getline(lineStream, value);
+        trim(value);
+
+        // store the directive and its value in the map
+        _locationDirectives[directive] = value;
+    }
+}
+
+
+/* DEBUG */
+
+void ConfigParser::printParsedDirectives(void) const
+{
+    std::cout << "Parsed Directives:" << std::endl;
+    for (std::map<std::string, std::string>::const_iterator it = _parsedDirectives.begin(); it != _parsedDirectives.end(); ++it)
+        std::cout << "  " << it->first << ": " << it->second << std::endl;
 }
 
 
 
 
+void ConfigParser::printLocationBlocks(void) const
+{
+    std::cout << "\nExtracted Location Blocks:\n" << std::endl;
+    for (size_t i = 0; i < _locationBlocks.size(); ++i)
+    {
+        std::cout << "Location Block " << (i + 1) << ":" << std::endl;
+        std::cout << _locationBlocks[i] << std::endl;
+    }
+}
 
-//parsing:
 
-        // this->_ConfigSpecs.push_back(ConfigSpec);
+void ConfigParser::printParsedLocationBlocks(void) const
+{
+    std::cout << "Parsed Location Blocks:" << std::endl;
+    for (std::map<std::string, std::map<std::string, std::string> >::const_iterator it = _parsedLocationBlocks.begin(); it != _parsedLocationBlocks.end(); ++it)
+    {
+        std::cout << "Location: " << it->first << std::endl;
 
-        // if (!locationBlocks.empty())
-        // {
-        //     for (size_t j = 0; j < locationBlocks.size(); ++j)
-        //     {
-        //         parseLocationBlock(locationBlocks[j]);
+        const std::map<std::string, std::string>& directives = it->second;
+        for (std::map<std::string, std::string>::const_iterator innerIt = directives.begin(); innerIt != directives.end(); ++innerIt)
+            std::cout << "  " << innerIt->first << ": " << innerIt->second << std::endl;
+        std::cout << std::endl;
+    }    
+}
 
-        //         // extract the path from the location block for the key to add the Location to the ConfigSpec
-        //         std::istringstream iss(locationBlocks[j]);
-        //         std::string locationPath;
-        //         iss >> locationPath; // Extract the path
+/*
 
-        //         // add the Location object to the ConfigSpec 
-        //         ConfigSpec.addLocation(locationPath, location); 
-        //     }
-        // }
+location blocks:
+
+    location /website {
+        autoindex off
+    }
+
+    location /website2 {
+        autoindex off
+        limit_except GET POST
+        error_page 500 custom_500.html
+    }
+
+onde armazenar:
+
+1 - std::map<std::string, std::map<std::string, std::vector<std::string>>>
+
+   [ /website2 ] [ limit_except ] [ get ] [ post ] 
+
+    - mais dificil par armazenar, mais facil para obter as informacoes
+
+2 - std::map<std::string, std::map<std::string, std::string>>
+
+    [ /website ] [ limit_except ] [ get post ]
+
+    - mais facil de armazenar, mais dificil para obter as informacoes
+    - teria que cortar a string " get post " para obter os dois valores
+    - por outro lado so duas diretrizes tem multiplos valores no location: 
+        - limit_except
+        - error_page
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
