@@ -184,7 +184,7 @@ void ConfigParser::parseServerBlocks()
         parseLocationBlocks();
         //DEBUG:
         printParsedLocationBlocks();
-        
+
         // transfer parsed data to ConfigSpec object;
         //configSpec.setdirectives(_parsedDirectives)
         // configSpec.setLocationBlocks(_parsedLocationBlocks);
@@ -318,6 +318,9 @@ void ConfigParser::parseLocationBlocks(void)
 
         // parse directives within this block
         parseDirectivesInLocation(block);
+        //DEGUB:
+        printLocationDirectives();    
+
 
         // store the directives map in the _parsedLocationBlocks
         _parsedLocationBlocks[_locationPath] = _locationDirectives;
@@ -363,17 +366,14 @@ void ConfigParser::parseDirectivesInLocation(const std::string &block)
 
     std::istringstream stream(block);
     std::string line;
-
-    // skip the first line as it contains the location path
-    std::getline(stream, line);
-
+     
     while (std::getline(stream, line))
     {
         // trim whitespace
         trim(line); 
 
-        // skip empty lines and the closing brace
-        if (line.empty() || line == "}")
+        // skip the empty lines and closing brace
+        if (line.empty() || line == "}" || line.find("location") != std::string::npos)
             continue;
 
         std::istringstream lineStream(line);
@@ -415,10 +415,20 @@ void ConfigParser::printLocationBlocks(void) const
 }
 
 
+void ConfigParser::printLocationDirectives(void) const
+{
+    std::cout << "Location Directives:" << std::endl;
+    for (std::map<std::string, std::string>::const_iterator it = _locationDirectives.begin(); it != _locationDirectives.end(); ++it)
+        std::cout << "  " << it->first << ": " << it->second << std::endl;
+}
+
+
+
 void ConfigParser::printParsedLocationBlocks(void) const
 {
     std::cout << "Parsed Location Blocks:" << std::endl;
-    for (std::map<std::string, std::map<std::string, std::string> >::const_iterator it = _parsedLocationBlocks.begin(); it != _parsedLocationBlocks.end(); ++it)
+    std::map<std::string, std::map<std::string, std::string> >::const_iterator it;
+    for (it = _parsedLocationBlocks.begin(); it != _parsedLocationBlocks.end(); ++it)
     {
         std::cout << "Location: " << it->first << std::endl;
 
