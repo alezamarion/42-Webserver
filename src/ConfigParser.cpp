@@ -28,9 +28,11 @@ ConfigParser &ConfigParser::operator=(const ConfigParser &rhs)
 }
 
 
-/* Extract information from the ConfigParseruration file and then create a ConfigSpec object for each ConfigSpec that exists in the ConfigParseruration file. The following functions are part of this */
+/* Extract information from the server configuation file and then create a ConfigSpec object 
+    for each server that exists in the server configuration file. 
+    The following functions are part of this */
 
-void ConfigParser::handleConfigParserFile(char *filePath)
+void ConfigParser::handleServerFile(char *filePath)
 {
     std::ifstream configFile;
     std::stringstream content;
@@ -119,7 +121,7 @@ bool ConfigParser::checkBracketsMatch()
 }
 
 
-/* Extract a ConfigSpec block from ConfigParser file and stores it in a vector of ConfigSpec blocks */
+/* Extract a Server block from ConfigParser file and stores it in a vector of ConfigSpec blocks */
 
 void ConfigParser::extractServerBlocks(void)
 {
@@ -162,7 +164,7 @@ void ConfigParser::extractServerBlocks(void)
 }
 
 
-/* Parse each ConfigSpec block stored in previous vector. First parse directives and then find and parse Location blocks */
+/* Parse each Server block stored in previous vector. First parse directives and then find and parse Location blocks */
 
 void ConfigParser::parseServerBlocks()
 {
@@ -196,7 +198,7 @@ void ConfigParser::parseServerBlocks()
 
 
 
-/* This function is part of previous function parseConfigSpecBlocks, it parses all directives and store it in a ConfigSpec object */
+/* This function is part of previous function parseServerBlocks, it parses all directives and store it in a map */
 
 void ConfigParser::parseDirectives(const std::string &serverBlock)
 {
@@ -235,7 +237,7 @@ void ConfigParser::parseDirectives(const std::string &serverBlock)
 }    
 
 
-/* This function is part of previous function parseDirectives it removes leading and trailing whitespace characters from a string */
+/* This function is part of previous function parseDirectives and it removes leading and trailing whitespace characters from a string */
 
 void ConfigParser::trim(std::string &string) 
 {
@@ -259,7 +261,7 @@ void ConfigParser::trim(std::string &string)
 
 
 
-/* Extract all location blocks inside ConfigParseruration file and store it in a string vector */
+/* Extract all location blocks inside server configuration file and store it in a string vector */
 
 void ConfigParser::extractLocationBlocks(std::string &serverBlock)
 {
@@ -303,7 +305,7 @@ void ConfigParser::extractLocationBlocks(std::string &serverBlock)
 
 
 
-/* Parse location blocks and store id in */
+/* Parse location blocks and store id in a map */
 
 void ConfigParser::parseLocationBlocks(void)
 {
@@ -326,6 +328,9 @@ void ConfigParser::parseLocationBlocks(void)
         _parsedLocationBlocks[_locationPath] = _locationDirectives;
     }
 }
+
+
+/* Part of previous function parseLocationBlocks */
 
 void ConfigParser::extractLocationPath(const std::string& block)
 {
@@ -360,6 +365,9 @@ void ConfigParser::extractLocationPath(const std::string& block)
 }
 
 
+
+/* Part of previous function parseLocationBlocks */
+
 void ConfigParser::parseDirectivesInLocation(const std::string &block)
 {
     _locationDirectives.clear();
@@ -392,6 +400,7 @@ void ConfigParser::parseDirectivesInLocation(const std::string &block)
 }
 
 
+
 /* DEBUG */
 
 void ConfigParser::printParsedDirectives(void) const
@@ -400,8 +409,6 @@ void ConfigParser::printParsedDirectives(void) const
     for (std::map<std::string, std::string>::const_iterator it = _parsedDirectives.begin(); it != _parsedDirectives.end(); ++it)
         std::cout << "  " << it->first << ": " << it->second << std::endl;
 }
-
-
 
 
 void ConfigParser::printLocationBlocks(void) const
@@ -421,7 +428,6 @@ void ConfigParser::printLocationDirectives(void) const
     for (std::map<std::string, std::string>::const_iterator it = _locationDirectives.begin(); it != _locationDirectives.end(); ++it)
         std::cout << "  " << it->first << ": " << it->second << std::endl;
 }
-
 
 
 void ConfigParser::printParsedLocationBlocks(void) const
@@ -470,20 +476,5 @@ onde armazenar:
     - por outro lado so duas diretrizes tem multiplos valores no location: 
         - limit_except
         - error_page
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 */

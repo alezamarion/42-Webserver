@@ -21,7 +21,7 @@ class ConfigParser
         // Copy assignment operator
         ConfigParser &operator=(ConfigParser const &rhs);
 
-        void handleConfigParserFile(char *filePath);
+        void handleServerFile(char *filePath);
         bool checkBracketsMatch(void);
         bool validateServerBlock(void);
         void extractServerBlocks(void);     
