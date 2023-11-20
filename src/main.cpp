@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     }
 
     setupSignalHandler();
-    ConfigParser.handleConfigParserFile(argv[1]);
+    ConfigParser.handleServerFile(argv[1]);
 
     (void)**argv;
 
