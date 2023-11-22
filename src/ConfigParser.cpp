@@ -1,4 +1,5 @@
 #include "ConfigParser.hpp"
+#include "ConfigSpec.hpp"
 
 ConfigParser::ConfigParser(void)
 {
@@ -58,6 +59,9 @@ void ConfigParser::handleServerFile(char *filePath)
 
     extractServerBlocks();
     parseServerBlocks();
+
+    //DEBUG
+    printAllConfigSpecs();
 }
 
 
@@ -176,23 +180,20 @@ void ConfigParser::parseServerBlocks()
         std::string serverBlock = this->_serverBlocks[i];
 
         parseDirectives(serverBlock);
+        extractLocationBlocks(serverBlock);
+        parseLocationBlocks();
+
         //DEBUG
         printParsedDirectives();
-
-        extractLocationBlocks(serverBlock);
-        //DEBUG:
         printLocationBlocks();
-
-        parseLocationBlocks();
-        //DEBUG:
         printParsedLocationBlocks();
 
         // transfer parsed data to ConfigSpec object;
-        //configSpec.setdirectives(_parsedDirectives)
-        // configSpec.setLocationBlocks(_parsedLocationBlocks);
+        configSpec.setDirectives(_parsedDirectives);
+        configSpec.setLocationBlocks(_parsedLocationBlocks);
 
         // add the fully populated ConfigSpec object to the vector      
-        // _configSpecs.push_back(configSpec);
+        _configSpecs.push_back(configSpec);
     }
 }
 
@@ -320,9 +321,6 @@ void ConfigParser::parseLocationBlocks(void)
 
         // parse directives within this block
         parseDirectivesInLocation(block);
-        //DEGUB:
-        printLocationDirectives();    
-
 
         // store the directives map in the _parsedLocationBlocks
         _parsedLocationBlocks[_locationPath] = _locationDirectives;
@@ -438,15 +436,6 @@ void ConfigParser::printLocationBlocks(void) const
     }
 }
 
-
-void ConfigParser::printLocationDirectives(void) const
-{
-    std::cout << "Location Directives:" << std::endl;
-    for (std::map<std::string, std::string>::const_iterator it = _locationDirectives.begin(); it != _locationDirectives.end(); ++it)
-        std::cout << "  " << it->first << ": " << it->second << std::endl;
-}
-
-
 void ConfigParser::printParsedLocationBlocks(void) const
 {
     std::cout << "Parsed Location Blocks:" << std::endl;
@@ -460,6 +449,18 @@ void ConfigParser::printParsedLocationBlocks(void) const
             std::cout << "  " << innerIt->first << ": " << innerIt->second << std::endl;
         std::cout << std::endl;
     }    
+}
+
+void ConfigParser::printAllConfigSpecs(void) const
+{
+    for (size_t i = 0; i < _configSpecs.size(); ++i)
+    {
+        std::cout << "------- ConfigSpec " << (i + 1) << " -------"<< "\n\n";
+        _configSpecs[i].printParsedDirectives();
+        std::cout << " \n";
+        _configSpecs[i].printParsedLocationBlocks();
+        std::cout << "\n";
+    }
 }
 
 /*

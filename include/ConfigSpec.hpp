@@ -19,25 +19,18 @@ class ConfigSpec
         ConfigSpec &operator=(ConfigSpec const &rhs);
 
         //methods:
-        void setDirectives(const std::map<std::string, std::string> &parsedDirectives);
+        void setDirectives(const std::map<std::string, std::vector<std::string> > &directives);
+        void setLocationBlocks(const std::map<std::string, std::map<std::string, std::string> > &locationBlocks);
 
         //debug:
-
+        void printParsedDirectives(void) const;
+        void printParsedLocationBlocks(void) const;
+        
 
 
     private:
-        std::map<std::string, std::string> _parsedDirectives;
-
-        int _listen;
-        int _autoindex;
-        int _client_max_body_size;
-        std::string _root;
-        std::vector<std::string> _index;
-        std::vector<std::string> _ConfigSpec_name;
-        std::map<std::string, std::string> _cgi;
-        std::map<int, std::string> _error_page;
-        std::map<int, std::string> _redirect;
-
+    std::map<std::string, std::vector<std::string> > _directives;
+    std::map<std::string, std::map<std::string, std::string> > _locationBlocks;
 };
 
 #endif

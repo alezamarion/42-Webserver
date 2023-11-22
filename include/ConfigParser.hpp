@@ -35,8 +35,8 @@ class ConfigParser
         //debug:
         void printParsedDirectives(void) const;
         void printLocationBlocks(void) const;
-        void printLocationDirectives(void) const;
         void printParsedLocationBlocks(void) const;
+        void printAllConfigSpecs(void) const;
 
     private:
         std::string _filePath;
