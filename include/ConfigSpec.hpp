@@ -2,7 +2,6 @@
 #define ConfigSpec_HPP
 
 #include "Libs.hpp"
-#include "Location.hpp"
 
 class ConfigSpec
 {
@@ -38,7 +37,6 @@ class ConfigSpec
         std::map<std::string, std::string> _cgi;
         std::map<int, std::string> _error_page;
         std::map<int, std::string> _redirect;
-        std::map<std::string, Location> _locations; 
 
 };
 

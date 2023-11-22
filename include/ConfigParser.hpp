@@ -3,7 +3,6 @@
 
 #include "Libs.hpp"
 #include "ConfigSpec.hpp"
-#include "Location.hpp"
 
 class ConfigParser
 {
@@ -43,7 +42,7 @@ class ConfigParser
         std::string _filePath;
         std::string _configFile;
         std::vector<std::string> _serverBlocks;
-        std::map<std::string, std::string> _parsedDirectives;
+        std::map<std::string, std::vector<std::string> > _parsedDirectives;
         std::vector<std::string> _locationBlocks;  
         std::string _locationPath;
         std::map<std::string, std::string> _locationDirectives;    

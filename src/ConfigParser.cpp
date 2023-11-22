@@ -232,7 +232,7 @@ void ConfigParser::parseDirectives(const std::string &serverBlock)
         trim(value);
 
         // store the directive in the ConfigSpec object
-        _parsedDirectives[directive] = value;
+        _parsedDirectives[directive].push_back(value);
     }
 }    
 
@@ -403,11 +403,28 @@ void ConfigParser::parseDirectivesInLocation(const std::string &block)
 
 /* DEBUG */
 
+/*  
+    The outer loop iterates over _parsedDirectives to access each directive and its associated vector of values.
+    For each directive (key in the map), the inner loop iterates over its vector of values.
+    Each value associated with a directive is printed, so if a directive has multiple values, they will all be displayed.
+    The for loop has three parts: initialization, condition, and increment. 
+    When you already initialize your iterator (or loop variable) outside the loop, you don't need to initialize it again inside the loop. 
+    Therefore, the initialization part is left blank.
+*/
+
 void ConfigParser::printParsedDirectives(void) const
 {
     std::cout << "Parsed Directives:" << std::endl;
-    for (std::map<std::string, std::string>::const_iterator it = _parsedDirectives.begin(); it != _parsedDirectives.end(); ++it)
-        std::cout << "  " << it->first << ": " << it->second << std::endl;
+    std::map<std::string, std::vector<std::string> >::const_iterator it;
+    for (it = _parsedDirectives.begin(); it != _parsedDirectives.end(); ++it)
+    {
+        std::cout << "  " << it->first << ":" << std::endl;
+        std::vector<std::string>::const_iterator vecIt = it->second.begin();
+        for ( ; vecIt != it->second.end(); ++vecIt)
+        {
+            std::cout << "    " << *vecIt << std::endl;
+        }
+    }
 }
 
 

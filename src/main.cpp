@@ -8,7 +8,7 @@ void stopAndClean(int signal)
     std::cout << '\n';
     std::cout << "CTRL + C received: freeing up resources" << std::endl;
     (void)signal;
-    //webConfigSpec.stop()
+    //webserver.stop()
     exit(0);
 }
 
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     while (true){}
 
-    /* return(webConfigSpec.run(argv[1])); */
+    /* return(Server.run(argv[1])); */
 }
 
 
