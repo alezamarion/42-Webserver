@@ -53,12 +53,32 @@ class ConfigParser
 
 #endif
 
-// {
-//     "/website": {
-//         {"autoindex", "off"}
-//     },
-//     "/website2": {
-//         {"autoindex", "off"},
-//         {"limit_except", "GET POST"}
-//     }
-// }
+/*
+
+location blocks:
+
+    location /website2 {
+        autoindex off
+        limit_except GET POST
+        error_page 500 custom_500.html
+    }
+
+onde armazenar:
+
+1 - std::map<std::string, std::map<std::string, std::vector<std::string>>>
+
+   [ /website2 ] [ limit_except ] [ get ] [ post ] 
+
+    - mais dificil par armazenar, mais facil para obter as informacoes
+
+2 - std::map<std::string, std::map<std::string, std::string>>
+
+    [ /website ] [ limit_except ] [ get post ]
+
+    - mais facil de armazenar, mais dificil para obter as informacoes
+    - teria que cortar a string " get post " para obter os dois valores
+    - por outro lado so duas diretrizes tem multiplos valores no location: 
+        - limit_except
+        - error_page
+
+*/

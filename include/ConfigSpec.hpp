@@ -35,7 +35,3 @@ class ConfigSpec
 
 #endif
 
-
-//- classe ConfigParser -> parseia o arquivo e gera 1 ConfigParser spec para cada ConfigSpec
-//- classe ConfigSpec; -> os getters fazer o parse getters diretivas e os getters do location
-

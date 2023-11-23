@@ -23,7 +23,8 @@ ConfigParser::~ConfigParser(void)
 
 ConfigParser &ConfigParser::operator=(const ConfigParser &rhs)
 {
-    if (this != &rhs) // Check for self-assignment to avoid stack overflow
+    // Check for self-assignment to avoid stack overflow
+    if (this != &rhs) 
         *this = rhs; 
     return *this;
 }
@@ -41,9 +42,8 @@ void ConfigParser::handleServerFile(char *filePath)
     // open file
     configFile.open(filePath);
     if (!configFile.is_open())
-    {
         throw std::runtime_error("Failed to open file: " + std::string(filePath)); //no catch block yet
-    }
+
     std::cout << "File opened successfully!" << std::endl;
 
     // read the file content
@@ -159,12 +159,10 @@ void ConfigParser::extractServerBlocks(void)
             }
         }
     } 
-    // DEGUB: print the ConfigSpec block to verify it
+    // DEGUB: print the server block to verify it
     std::cout << "\nServer Block Found\n" << std::endl;
     for (size_t i = 0; i < _serverBlocks.size(); ++i)
-    {
         std::cout << _serverBlocks[i] << "\n" << std::endl;
-    }
 }
 
 
@@ -183,10 +181,12 @@ void ConfigParser::parseServerBlocks()
         extractLocationBlocks(serverBlock);
         parseLocationBlocks();
 
+        /*
         //DEBUG
         printParsedDirectives();
         printLocationBlocks();
         printParsedLocationBlocks();
+        */
 
         // transfer parsed data to ConfigSpec object;
         configSpec.setDirectives(_parsedDirectives);
@@ -419,9 +419,7 @@ void ConfigParser::printParsedDirectives(void) const
         std::cout << "  " << it->first << ":" << std::endl;
         std::vector<std::string>::const_iterator vecIt = it->second.begin();
         for ( ; vecIt != it->second.end(); ++vecIt)
-        {
             std::cout << "    " << *vecIt << std::endl;
-        }
     }
 }
 
@@ -435,6 +433,7 @@ void ConfigParser::printLocationBlocks(void) const
         std::cout << _locationBlocks[i] << std::endl;
     }
 }
+
 
 void ConfigParser::printParsedLocationBlocks(void) const
 {
@@ -451,6 +450,7 @@ void ConfigParser::printParsedLocationBlocks(void) const
     }    
 }
 
+
 void ConfigParser::printAllConfigSpecs(void) const
 {
     for (size_t i = 0; i < _configSpecs.size(); ++i)
@@ -462,37 +462,3 @@ void ConfigParser::printAllConfigSpecs(void) const
         std::cout << "\n";
     }
 }
-
-/*
-
-location blocks:
-
-    location /website {
-        autoindex off
-    }
-
-    location /website2 {
-        autoindex off
-        limit_except GET POST
-        error_page 500 custom_500.html
-    }
-
-onde armazenar:
-
-1 - std::map<std::string, std::map<std::string, std::vector<std::string>>>
-
-   [ /website2 ] [ limit_except ] [ get ] [ post ] 
-
-    - mais dificil par armazenar, mais facil para obter as informacoes
-
-2 - std::map<std::string, std::map<std::string, std::string>>
-
-    [ /website ] [ limit_except ] [ get post ]
-
-    - mais facil de armazenar, mais dificil para obter as informacoes
-    - teria que cortar a string " get post " para obter os dois valores
-    - por outro lado so duas diretrizes tem multiplos valores no location: 
-        - limit_except
-        - error_page
-
-*/
