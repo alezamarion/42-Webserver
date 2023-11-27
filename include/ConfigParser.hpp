@@ -20,7 +20,7 @@ class ConfigParser
         // Copy assignment operator
         ConfigParser &operator=(ConfigParser const &rhs);
 
-        void handleServerFile(char *filePath);
+        void handleConfigFile(char *filePath);
         bool checkBracketsMatch(void);
         bool validateServerBlock(void);
         void extractServerBlocks(void);     
@@ -46,7 +46,6 @@ class ConfigParser
         std::vector<std::string> _locationBlocks;  
         std::string _locationPath;
         std::map<std::string, std::string> _locationDirectives;    
-        // outher key: path of location block (/website2) | innner map: map containing config directives for that location block
         std::map<std::string, std::map<std::string, std::string> > _parsedLocationBlocks; 
         std::vector<ConfigSpec> _configSpecs;
 };

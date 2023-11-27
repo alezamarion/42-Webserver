@@ -34,7 +34,7 @@ ConfigParser &ConfigParser::operator=(const ConfigParser &rhs)
     for each server that exists in the server configuration file. 
     The following functions are part of this */
 
-void ConfigParser::handleServerFile(char *filePath)
+void ConfigParser::handleConfigFile(char *filePath)
 {
     std::ifstream configFile;
     std::stringstream content;
@@ -316,10 +316,7 @@ void ConfigParser::parseLocationBlocks(void)
     {
         std::string block = _locationBlocks[i];
 
-        // extract location path from the block
         extractLocationPath(block);
-
-        // parse directives within this block
         parseDirectivesInLocation(block);
 
         // store the directives map in the _parsedLocationBlocks
