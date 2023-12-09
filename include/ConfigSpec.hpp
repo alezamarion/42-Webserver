@@ -23,13 +23,13 @@ class ConfigSpec
         void setLocationBlocks(const std::map<std::string, std::map<std::string, std::string> > &locationBlocks);
 
         //getters:
-        bool getDirective(const std::string& key, std::vector<std::string>& value) const;
+        std::vector<std::string> getDirective(const std::string& key) const;
         bool getLocationBlock(const std::string& path, std::map<std::string, std::string>& blockConfig) const;
 
         //debug:
         void printParsedDirectives(void) const;
         void printParsedLocationBlocks(void) const;
-        
+
 
 
     private:

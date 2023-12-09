@@ -159,14 +159,18 @@ void ConfigParser::extractServerBlocks(void)
             }
         }
     } 
-    // DEGUB: print the server block to verify it
-    std::cout << "\nServer Block Found\n" << std::endl;
-    for (size_t i = 0; i < _serverBlocks.size(); ++i)
-        std::cout << _serverBlocks[i] << "\n" << std::endl;
+    // DEGUB:
+    printExtractedServerBlocks();
 }
 
 
-/* Parse each Server block stored in previous vector. First parse directives and then find and parse Location blocks */
+/* Parse each Server block stored in previous vector. First parse directives and then find and parse Location blocks 
+
+    DEBUG
+    printParsedDirectives();
+    printLocationBlocks();
+    printParsedLocationBlocks();
+*/
 
 void ConfigParser::parseServerBlocks()
 {
@@ -180,13 +184,6 @@ void ConfigParser::parseServerBlocks()
         parseDirectives(serverBlock);
         extractLocationBlocks(serverBlock);
         parseLocationBlocks();
-
-        /*
-        //DEBUG
-        printParsedDirectives();
-        printLocationBlocks();
-        printParsedLocationBlocks();
-        */
 
         // transfer parsed data to ConfigSpec object;
         configSpec.setDirectives(_parsedDirectives);
@@ -395,6 +392,11 @@ void ConfigParser::parseDirectivesInLocation(const std::string &block)
 }
 
 
+/* getter */
+const std::vector<ConfigSpec>& ConfigParser::getConfigSpecs() const
+{
+    return _configSpecs;
+}
 
 /* DEBUG */
 
@@ -406,6 +408,14 @@ void ConfigParser::parseDirectivesInLocation(const std::string &block)
     When you already initialize your iterator (or loop variable) outside the loop, you don't need to initialize it again inside the loop. 
     Therefore, the initialization part is left blank.
 */
+
+void ConfigParser::printExtractedServerBlocks(void) const
+{
+    std::cout << "\nServer Block Found\n" << std::endl;
+    for (size_t i = 0; i < _serverBlocks.size(); ++i)
+        std::cout << _serverBlocks[i] << "\n" << std::endl;
+}
+
 
 void ConfigParser::printParsedDirectives(void) const
 {

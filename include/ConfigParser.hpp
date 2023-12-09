@@ -32,7 +32,11 @@ class ConfigParser
         void extractLocationPath(const std::string  &block);
         void parseDirectivesInLocation(const std::string &block);
 
+        //getter:
+        const std::vector<ConfigSpec>& getConfigSpecs() const;
+
         //debug:
+        void printExtractedServerBlocks(void) const;
         void printParsedDirectives(void) const;
         void printLocationBlocks(void) const;
         void printParsedLocationBlocks(void) const;

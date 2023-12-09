@@ -43,19 +43,21 @@ void ConfigSpec::setLocationBlocks(const std::map<std::string, std::map<std::str
 }
 
 
-bool ConfigSpec::getDirective(const std::string& key, std::vector<std::string>& value) const
+/*
+//nao retorna o valor
+std::vector<std::string> ConfigSpec::getDirective(const std::string& key) const
 {
-    std::map<std::string, std::vector<std::string> >::const_iterator it = _directives.find(key);
+    std::vector<std::string> value;
+    std::map<std::string, std::vector<std::string> >::const_iterator it;
+    
+    it = _directives.find(key);
     if (it != _directives.end())
     {
         value = it->second;
-        // directive found
-        return true; 
+        return value; 
     }
-    // directive not found
-    value.clear();
-    return false;
-}
+    else
+        return value; //!!!
 
 bool ConfigSpec::getLocationBlock(const std::string& path, std::map<std::string, std::string>& blockConfig) const
 {
@@ -68,7 +70,7 @@ bool ConfigSpec::getLocationBlock(const std::string& path, std::map<std::string,
     blockConfig.clear();
     return false;
 }
-
+*/
 
 
 

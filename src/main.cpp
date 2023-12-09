@@ -1,5 +1,6 @@
 #include "Libs.hpp"
 #include "ConfigParser.hpp" 
+#include "Socket.hpp"
 
 
 
@@ -24,6 +25,7 @@ void setupSignalHandler()
 int main(int argc, char **argv)
 {
     ConfigParser ConfigParser;
+    Socket socket;
     
     if (argc != 2)
     {
@@ -35,7 +37,10 @@ int main(int argc, char **argv)
     }
 
     setupSignalHandler();
+
     ConfigParser.handleConfigFile(argv[1]);
+    socket.initSockets(ConfigParser);
+
 
     (void)**argv;
 
