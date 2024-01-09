@@ -357,7 +357,6 @@ void ConfigParser::extractLocationPath(const std::string& block)
 }
 
 
-
 /* Part of previous function parseLocationBlocks */
 
 void ConfigParser::parseDirectivesInLocation(const std::string &block)
